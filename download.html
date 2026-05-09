@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GamZ — Download Your Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#06070f;--card:#13162b;--border:#1e2240;--accent:#e8392a;--accent2:#ff6b35;--neon:#00e5ff;--text:#e8eaf6;--text2:#8892b0;--glow:rgba(232,57,42,.35)}
+[data-theme="light"]{--bg:#f0f2ff;--card:#fff;--border:#c5cbf0;--text:#0d0f1e;--text2:#3a4060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px;text-align:center;transition:background .4s}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.page{position:relative;z-index:1;max-width:480px;width:100%}
+.success-badge{width:80px;height:80px;border-radius:50%;background:rgba(0,229,255,.15);border:3px solid var(--neon);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;box-shadow:0 0 32px rgba(0,229,255,.4);animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(0)}80%{transform:scale(1.1)}100%{transform:scale(1)}}
+h1{font-family:'Orbitron',monospace;color:var(--neon);font-size:1.6rem;margin-bottom:8px}
+.sub{color:var(--text2);margin-bottom:32px;font-size:1rem;line-height:1.6}
+.game-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px}
+.game-logo-dl{width:100%;height:140px;border-radius:10px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-weight:900;font-size:.9rem;text-align:center;padding:16px}
+.game-name-dl{font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:700;margin-bottom:6px}
+.game-price-dl{color:var(--neon);font-weight:700;font-size:1rem;margin-bottom:4px}
+.game-note{color:var(--text2);font-size:.85rem}
+.order-info{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:24px;text-align:left}
+.order-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.9rem}
+.order-row:last-child{border-bottom:none}
+.order-row .label{color:var(--text2)}
+.order-row .val{font-weight:700}
+/* DB status badge */
+.db-status{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;font-size:.8rem;font-weight:700;margin-bottom:20px}
+.db-status.saved{background:rgba(34,197,94,.12);border:1px solid #22c55e;color:#22c55e}
+.db-status.local{background:rgba(255,193,7,.1);border:1px solid #ffc107;color:#ffc107}
+.btn-download{display:inline-flex;align-items:center;gap:10px;padding:16px 40px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .3s;width:100%;justify-content:center;margin-bottom:12px}
+.btn-download:hover{transform:scale(1.03);box-shadow:0 8px 28px var(--glow)}
+.btn-mygames{display:block;padding:12px;background:var(--card);border:2px solid var(--border);color:var(--text);border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;cursor:pointer;transition:all .3s;width:100%;text-align:center;margin-bottom:12px;text-decoration:none}
+.btn-mygames:hover{border-color:var(--neon);color:var(--neon)}
+.btn-back{display:block;padding:12px;background:none;border:1px solid var(--border);color:var(--text2);border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;cursor:pointer;transition:all .3s;width:100%;text-align:center;text-decoration:none}
+.btn-back:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<div class="page">
+  <div class="success-badge">✓</div>
+  <h1>Payment Successful!</h1>
+  <p class="sub">Your game is ready to download.<br>A receipt has been sent to your email.</p>
+
+  <div class="db-status" id="dbStatus">⏳ Saving to database…</div>
+
+  <div class="game-card" id="gameCard">
+    <div class="game-logo-dl" id="gameLogo">Loading…</div>
+    <div class="game-name-dl" id="gameName">—</div>
+    <div class="game-price-dl" id="gamePrice">—</div>
+    <div class="game-note">Lifetime access • Windows PC</div>
+  </div>
+
+  <div class="order-info">
+    <div class="order-row"><span class="label">Order ID</span><span class="val" id="orderId">—</span></div>
+    <div class="order-row"><span class="label">Date</span><span class="val" id="orderDate">—</span></div>
+    <div class="order-row"><span class="label">Account</span><span class="val" id="orderEmail">—</span></div>
+    <div class="order-row"><span class="label">Status</span><span class="val" style="color:var(--neon)">✓ Paid & Confirmed</span></div>
+  </div>
+
+  <button class="btn-download" id="dlBtn" onclick="handleDownload()">⬇ Download Now</button>
+  <a class="btn-mygames" href="my-games.html">🎮 View in My Games Library</a>
+  <a class="btn-back" href="index.html">← Back to Store</a>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="gamz-firebase.js"></script>
+
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('gamz_theme')||'dark');
+
+// ── All 25 games with Google Drive download links ──────
+// Replace YOUR_FILE_ID_N with actual Google Drive file IDs
+// How to get: Upload game to Drive → Share → "Anyone with link"
+//             → copy the ID from the link URL
+const GAMES = [
+  {id:1, name:"Neon Drift Legends",   price:99,  colors:["#ff00ff","#00ffff","#0d0d1a"],  drive:"YOUR_FILE_ID_1"},
+  {id:2, name:"Turbo Street Rush",    price:149, colors:["#ff6b00","#ffcc00","#1a0d00"],  drive:"YOUR_FILE_ID_2"},
+  {id:3, name:"Midnight Circuit X",   price:129, colors:["#0055ff","#00ffcc","#000d1a"],  drive:"YOUR_FILE_ID_3"},
+  {id:4, name:"Nitro Ridge Rally",    price:99,  colors:["#ff4400","#ff8800","#1a0800"],  drive:"YOUR_FILE_ID_4"},
+  {id:5, name:"Hyper City Racers",    price:119, colors:["#aa00ff","#ff00aa","#0d001a"],  drive:"YOUR_FILE_ID_5"},
+  {id:6, name:"Frontline Havoc",      price:199, colors:["#5d4037","#ff6f00","#1a0f00"],  drive:"YOUR_FILE_ID_6"},
+  {id:7, name:"Voidstrike Ops",       price:179, colors:["#1a237e","#00e5ff","#000814"],  drive:"YOUR_FILE_ID_7"},
+  {id:8, name:"Phantom Recon Delta",  price:199, colors:["#263238","#00bcd4","#080c0f"],  drive:"YOUR_FILE_ID_8"},
+  {id:9, name:"Shadow Breach",        price:149, colors:["#212121","#f44336","#0a0a0a"],  drive:"YOUR_FILE_ID_9"},
+  {id:10,name:"Storm Assault Unit",   price:169, colors:["#1b5e20","#69f0ae","#020f05"],  drive:"YOUR_FILE_ID_10"},
+  {id:11,name:"Metro Train Manager",  price:89,  colors:["#e65100","#ffa726","#1a0e00"],  drive:"YOUR_FILE_ID_11"},
+  {id:12,name:"Cargo Truck Tycoon",   price:99,  colors:["#33691e","#cddc39","#0a1000"],  drive:"YOUR_FILE_ID_12"},
+  {id:13,name:"City Builder Origins", price:129, colors:["#0d47a1","#40c4ff","#000814"],  drive:"YOUR_FILE_ID_13"},
+  {id:14,name:"Island Farm Frontier", price:79,  colors:["#1b5e20","#76ff03","#021000"],  drive:"YOUR_FILE_ID_14"},
+  {id:15,name:"Deep Sea Harbor Sim",  price:109, colors:["#006064","#18ffff","#000d0e"],  drive:"YOUR_FILE_ID_15"},
+  {id:16,name:"Streetball Champions 24",price:99,colors:["#f57f17","#ffee58","#1a0f00"], drive:"YOUR_FILE_ID_16"},
+  {id:17,name:"Pro Volley Arena",     price:89,  colors:["#880e4f","#f48fb1","#1a0010"],  drive:"YOUR_FILE_ID_17"},
+  {id:18,name:"Ultimate Goal League", price:119, colors:["#1a237e","#448aff","#000614"],  drive:"YOUR_FILE_ID_18"},
+  {id:19,name:"Turbo Table Tennis",   price:69,  colors:["#b71c1c","#ef9a9a","#1a0000"],  drive:"YOUR_FILE_ID_19"},
+  {id:20,name:"All-Star Bowling Nights",price:79,colors:["#4a148c","#ea80fc","#0d0014"], drive:"YOUR_FILE_ID_20"},
+  {id:21,name:"Urban Siege Zero",     price:179, colors:["#37474f","#76ff03","#080c05"],  drive:"YOUR_FILE_ID_21"},
+  {id:22,name:"Titan Squad Assault",  price:199, colors:["#b71c1c","#ff6d00","#1a0000"],  drive:"YOUR_FILE_ID_22"},
+  {id:23,name:"Crystal Dungeon Quest",price:149, colors:["#4a148c","#e040fb","#0d0014"],  drive:"YOUR_FILE_ID_23"},
+  {id:24,name:"Mythborn Warriors",    price:169, colors:["#1a237e","#ffd740","#000814"],  drive:"YOUR_FILE_ID_24"},
+  {id:25,name:"Cyber Realm Siege",    price:189, colors:["#006064","#00e5ff","#000d0e"],  drive:"YOUR_FILE_ID_25"},
+];
+
+const params  = new URLSearchParams(window.location.search);
+const gameId  = parseInt(params.get('id')) || 1;
+const game    = GAMES.find(g => g.id === gameId) || GAMES[0];
+const user    = gamzCurrentUser();
+const orderId = 'GZ' + Date.now().toString(36).toUpperCase();
+
+// ── Populate UI ────────────────────────────────────────
+document.title = 'GamZ — Download ' + game.name;
+document.getElementById('gameName').textContent  = game.name;
+document.getElementById('gamePrice').textContent = '₹' + game.price + ' — Purchased ✓';
+document.getElementById('orderId').textContent   = orderId;
+document.getElementById('orderDate').textContent = new Date().toLocaleString('en-IN', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+document.getElementById('orderEmail').textContent = user ? user.email : 'Not logged in';
+
+const logo = document.getElementById('gameLogo');
+logo.style.background = `linear-gradient(160deg,${game.colors[0]}44,${game.colors[1]}33,${game.colors[2]})`;
+logo.style.color = game.colors[1];
+logo.textContent = game.name.toUpperCase();
+
+// ── Save order to Firestore + localStorage ─────────────
+async function saveOrderToDB() {
+  const statusEl = document.getElementById('dbStatus');
+  try {
+    if (user && gamzDB) {
+      // Save to Firestore
+      await gamzDB.collection('orders').doc(orderId).set({
+        orderId,
+        userEmail:   user.email,
+        userName:    user.name || '',
+        gameId:      game.id,
+        gameName:    game.name,
+        amount:      game.price,
+        purchasedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        status:      'Completed'
+      });
+      // Update user document
+      await gamzDB.collection('users').doc(user.email).update({
+        games: firebase.firestore.FieldValue.arrayUnion({
+          id: game.id, name: game.name,
+          price: game.price, purchasedAt: new Date().toISOString()
+        }),
+        totalSpent: firebase.firestore.FieldValue.increment(game.price),
+        lastPurchaseAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(() => {
+        // User doc may not exist yet in Firestore — set it
+        return gamzDB.collection('users').doc(user.email).set({
+          name: user.name, email: user.email,
+          games: [{id:game.id,name:game.name,price:game.price,purchasedAt:new Date().toISOString()}],
+          totalSpent: game.price,
+          joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, {merge:true});
+      });
+      statusEl.className = 'db-status saved';
+      statusEl.textContent = '✅ Order saved to database (Firestore)';
+    } else {
+      // No Firebase — show configuration reminder
+      statusEl.className = 'db-status local';
+      statusEl.textContent = '⚠️ Add messagingSenderId & appId to gamz-firebase.js to enable full database';
+    }
+  } catch(e) {
+    console.error('DB save error:', e);
+    statusEl.className = 'db-status local';
+    statusEl.textContent = '⚠️ Saved locally — Firestore not configured yet';
+  }
+}
+
+saveOrderToDB();
+
+// ── Download handler ───────────────────────────────────
+function handleDownload() {
+  if (game.drive.startsWith('YOUR_FILE_ID')) {
+    alert('⚙️ To enable downloads:\n\n1. Upload your game .zip/.exe to Google Drive\n2. Right-click → Share → "Anyone with the link"\n3. Copy the file ID from the share link\n   (the long string between /d/ and /view in the URL)\n4. Open download.html and replace:\n   YOUR_FILE_ID_' + game.id + '\n   with your actual file ID\n\nSee DATABASE_SETUP.md for full steps.');
+    return;
+  }
+  const url = 'https://drive.google.com/uc?export=download&id=' + game.drive;
+  window.open(url, '_blank');
+  const btn = document.getElementById('dlBtn');
+  btn.innerHTML = '✅ Downloading…';
+  btn.style.background = 'linear-gradient(135deg,#1b5e20,#2e7d32)';
+}
+
+// ── Confetti ───────────────────────────────────────────
+(function(){
+  const wrap = document.getElementById('confettiWrap');
+  const colors = ['#e8392a','#00e5ff','#7c3aed','#ffcc00','#69f0ae'];
+  const style  = document.createElement('style');
+  style.textContent = '@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}';
+  document.head.appendChild(style);
+  for (let i = 0; i < 70; i++) {
+    const el   = document.createElement('div');
+    const size = Math.random() * 9 + 4;
+    el.style.cssText = `position:absolute;width:${size}px;height:${size}px;background:${colors[i%colors.length]};left:${Math.random()*100}%;top:-10px;border-radius:${Math.random()>.5?'50%':'2px'};animation:fall ${Math.random()*2+2}s linear ${Math.random()*2}s forwards;opacity:.85`;
+    wrap.appendChild(el);
+  }
+})();
+</script>
+</body>
+</html>

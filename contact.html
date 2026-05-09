@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GamZ — Contact & Feedback</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+:root{--bg:#06070f;--bg2:#0d0f1e;--card:#13162b;--border:#1e2240;--accent:#e8392a;--accent2:#ff6b35;--neon:#00e5ff;--text:#e8eaf6;--text2:#8892b0;--glow:rgba(232,57,42,.35)}
+[data-theme="light"]{--bg:#f0f2ff;--bg2:#e4e8ff;--card:#fff;--border:#c5cbf0;--text:#0d0f1e;--text2:#3a4060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .4s}
+nav{height:64px;background:rgba(6,7,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(16px,4vw,48px);position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.4rem;color:var(--accent);cursor:pointer;letter-spacing:2px}
+.nav-logo span{color:var(--neon)}
+.back-link{margin-left:auto;color:var(--text2);font-weight:600;font-size:.9rem;text-decoration:none;transition:color .3s}
+.back-link:hover{color:var(--accent)}
+.page{max-width:720px;margin:0 auto;padding:48px clamp(16px,4vw,40px)}
+.page-title{font-family:'Orbitron',monospace;font-size:clamp(1.4rem,4vw,2rem);color:var(--accent);margin-bottom:8px}
+.page-sub{color:var(--text2);margin-bottom:36px;line-height:1.6}
+.contact-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px}
+.contact-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;align-items:center;gap:14px}
+.cc-icon{font-size:28px}
+.cc-label{font-size:.8rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+.cc-val{font-weight:700;color:var(--text);font-size:.95rem}
+.cc-val a{color:var(--neon);text-decoration:none}
+h2{font-family:'Orbitron',monospace;font-size:1.1rem;color:var(--neon);margin-bottom:20px;letter-spacing:1px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:.85rem;color:var(--text2);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:13px 16px;background:var(--bg2);border:2px solid var(--border);border-radius:10px;color:var(--text);font-size:1rem;font-family:'Rajdhani',sans-serif;font-weight:600;transition:all .3s}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 16px var(--glow)}
+.form-group textarea{min-height:140px;resize:vertical}
+.form-group select option{background:var(--bg)}
+.btn-submit{padding:14px 40px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:10px;font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .3s}
+.btn-submit:hover{transform:scale(1.02);box-shadow:0 8px 24px var(--glow)}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.success-msg{display:none;background:rgba(0,229,255,.08);border:1px solid var(--neon);border-radius:10px;padding:20px 24px;color:var(--neon);margin-top:20px;font-weight:600;line-height:1.7}
+.success-msg.show{display:block}
+.error-msg{display:none;background:rgba(232,57,42,.08);border:1px solid var(--accent);border-radius:10px;padding:20px 24px;color:var(--accent);margin-top:20px;font-weight:600}
+.error-msg.show{display:block}
+@media(max-width:500px){.contact-cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo" onclick="window.location='index.html'">GamZ<span>.</span></div>
+  <a class="back-link" href="index.html">← Home</a>
+</nav>
+
+<div class="page">
+  <div class="page-title">Contact & Feedback</div>
+  <p class="page-sub">Have a question, suggestion, or just want to say hi? We'd love to hear from you.</p>
+
+  <div class="contact-cards">
+    <div class="contact-card">
+      <div class="cc-icon">📧</div>
+      <div><div class="cc-label">Email</div><div class="cc-val"><a href="mailto:gamzadventure@gmail.com">gamzadventure@gmail.com</a></div></div>
+    </div>
+    <div class="contact-card">
+      <div class="cc-icon">⏱</div>
+      <div><div class="cc-label">Response Time</div><div class="cc-val">Within 24–48 hours</div></div>
+    </div>
+    <div class="contact-card">
+      <div class="cc-icon">🕐</div>
+      <div><div class="cc-label">Support Hours</div><div class="cc-val">Mon–Sat, 10am–8pm IST</div></div>
+    </div>
+    <div class="contact-card">
+      <div class="cc-icon">📍</div>
+      <div><div class="cc-label">Location</div><div class="cc-val">India 🇮🇳</div></div>
+    </div>
+  </div>
+
+  <h2>Send Us a Message</h2>
+
+  <div class="form-group">
+    <label>Your Name</label>
+    <input type="text" id="fName" placeholder="Your full name"/>
+  </div>
+  <div class="form-group">
+    <label>Your Email Address</label>
+    <input type="email" id="fEmail" placeholder="your@email.com"/>
+  </div>
+  <div class="form-group">
+    <label>Category</label>
+    <select id="fCat">
+      <option value="💬 General Feedback">💬 General Feedback</option>
+      <option value="🎮 Game Request / Suggestion">🎮 Game Request / Suggestion</option>
+      <option value="🐛 Bug Report">🐛 Bug Report</option>
+      <option value="💳 Payment Issue">💳 Payment Issue</option>
+      <option value="⬇ Download Issue">⬇ Download Issue</option>
+      <option value="📌 Other">📌 Other</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Your Message</label>
+    <textarea id="fMsg" placeholder="Describe your issue or feedback in detail…"></textarea>
+  </div>
+
+  <button class="btn-submit" id="submitBtn" onclick="submitFeedback()">SEND MESSAGE</button>
+
+  <div class="success-msg" id="successMsg">
+    ✅ Message sent successfully!<br>
+    <span style="font-weight:400;font-size:.9rem">
+      We've received your message and will reply to your email within 24–48 hours.
+      Thank you for contacting GamZ!
+    </span>
+  </div>
+  <div class="error-msg" id="errorMsg">
+    ❌ Message failed to send.<br>
+    <span style="font-weight:400;font-size:.9rem">
+      Please email us directly at <strong>gamzadventure@gmail.com</strong>
+    </span>
+  </div>
+</div>
+
+<script>
+// ✅ EmailJS init after library is loaded
+emailjs.init("7DkD3Gwp_tNHh89nY");
+
+const t = localStorage.getItem('gamz_theme') || 'dark';
+document.documentElement.setAttribute('data-theme', t);
+
+function submitFeedback() {
+  const name     = document.getElementById('fName').value.trim();
+  const email    = document.getElementById('fEmail').value.trim();
+  const msg      = document.getElementById('fMsg').value.trim();
+  const category = document.getElementById('fCat').value; // ✅ Now sends full readable label e.g. "💳 Payment Issue"
+
+  if (!name || !email || !msg) {
+    alert('Please fill in all fields before sending.');
+    return;
+  }
+
+  // Basic email format check
+  if (!email.includes('@') || !email.includes('.')) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled    = true;
+  btn.textContent = 'SENDING…';
+  document.getElementById('successMsg').classList.remove('show');
+  document.getElementById('errorMsg').classList.remove('show');
+
+  // ✅ All 4 variables sent: from_name, from_email, category, message
+  // These MUST match the variable names in your EmailJS template body
+  emailjs.send('service_mab67kv', 'template_l2gzkif', {
+    from_name:  name,     // → {{from_name}} in template
+    from_email: email,    // → {{from_email}} in template  (also set as Reply-To in template settings)
+    category:   category, // → {{category}} in template
+    message:    msg       // → {{message}} in template
+  })
+  .then(function(response) {
+    console.log('✅ Feedback sent! Status:', response.status);
+    document.getElementById('successMsg').classList.add('show');
+    // Clear form
+    document.getElementById('fName').value  = '';
+    document.getElementById('fEmail').value = '';
+    document.getElementById('fMsg').value   = '';
+    document.getElementById('fCat').selectedIndex = 0;
+    btn.disabled    = false;
+    btn.textContent = 'SEND MESSAGE';
+  })
+  .catch(function(error) {
+    console.error('❌ Feedback email failed:', JSON.stringify(error));
+    document.getElementById('errorMsg').classList.add('show');
+    btn.disabled    = false;
+    btn.textContent = 'SEND MESSAGE';
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GamZ — Legal Pages</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#06070f;--bg2:#0d0f1e;--card:#13162b;--border:#1e2240;--accent:#e8392a;--neon:#00e5ff;--text:#e8eaf6;--text2:#8892b0}
+[data-theme="light"]{--bg:#f0f2ff;--bg2:#e4e8ff;--card:#fff;--border:#c5cbf0;--text:#0d0f1e;--text2:#3a4060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .4s}
+nav{height:64px;background:rgba(6,7,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(16px,4vw,48px);position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.4rem;color:var(--accent);cursor:pointer;letter-spacing:2px}
+.nav-logo span{color:var(--neon)}
+.back-link{margin-left:auto;color:var(--text2);font-weight:600;font-size:.9rem;text-decoration:none;transition:color .3s}
+.back-link:hover{color:var(--accent)}
+.page{max-width:780px;margin:0 auto;padding:48px clamp(16px,4vw,40px)}
+.page-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px}
+.page-tab{padding:9px 18px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--text2);font-size:.85rem;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .3s;text-transform:uppercase}
+.page-tab:hover,.page-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.page-title{font-family:'Orbitron',monospace;font-size:clamp(1.4rem,4vw,2rem);color:var(--accent);margin-bottom:8px}
+.updated{color:var(--text2);font-size:.85rem;margin-bottom:32px}
+h2{font-family:'Orbitron',monospace;font-size:1rem;color:var(--neon);margin:28px 0 10px;letter-spacing:1px;text-transform:uppercase}
+p,li{color:var(--text2);line-height:1.8;font-size:.98rem;margin-bottom:10px}
+ul{padding-left:20px;margin-bottom:12px}
+.content{display:none}
+.content.show{display:block}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo" onclick="window.location='index.html'">GamZ<span>.</span></div>
+  <a class="back-link" href="index.html">← Home</a>
+</nav>
+<div class="page">
+  <div class="page-tabs">
+    <button class="page-tab active" onclick="show('privacy',this)">Privacy Policy</button>
+    <button class="page-tab" onclick="show('terms',this)">Terms & Conditions</button>
+    <button class="page-tab" onclick="show('refund',this)">Refund Policy</button>
+    <button class="page-tab" onclick="show('shipping',this)">Delivery Policy</button>
+  </div>
+
+  <!-- PRIVACY -->
+  <div class="content show" id="privacy">
+    <div class="page-title">Privacy Policy</div>
+    <p class="updated">Last updated: April 2025</p>
+    <h2>1. Information We Collect</h2>
+    <p>When you create an account on GamZ, we collect your full name, email address, and a hashed password. We do not collect payment card details — all payments are processed by our third-party gateway (Instamojo) which has its own privacy policy.</p>
+    <h2>2. How We Use Your Information</h2>
+    <ul>
+      <li>To create and manage your GamZ account</li>
+      <li>To process game purchases and provide download access</li>
+      <li>To send purchase confirmation and welcome emails</li>
+      <li>To improve our website and game offerings</li>
+    </ul>
+    <h2>3. Data Storage</h2>
+    <p>Your account data is currently stored in your browser's local storage (for the demo version). In production, data will be stored on secure Firebase servers with encryption at rest.</p>
+    <h2>4. We Never Sell Your Data</h2>
+    <p>GamZ does not sell, rent, or share your personal information with any third party for marketing purposes.</p>
+    <h2>5. Cookies</h2>
+    <p>We use minimal cookies only for keeping you logged in and remembering your theme preference. No tracking or advertising cookies are used.</p>
+    <h2>6. Your Rights</h2>
+    <p>You may request deletion of your account and all associated data at any time by emailing us at gamzadventure@gmail.com.</p>
+    <h2>7. Contact</h2>
+    <p>For privacy-related questions: <strong style="color:var(--neon)">gamzadventure@gmail.com</strong></p>
+  </div>
+
+  <!-- TERMS -->
+  <div class="content" id="terms">
+    <div class="page-title">Terms & Conditions</div>
+    <p class="updated">Last updated: April 2025</p>
+    <h2>1. Acceptance</h2>
+    <p>By accessing or using GamZ, you agree to be bound by these Terms. If you do not agree, please do not use our platform.</p>
+    <h2>2. Account Responsibility</h2>
+    <p>You are responsible for maintaining the confidentiality of your account credentials. You must not share your account with others.</p>
+    <h2>3. Purchases & Licensing</h2>
+    <p>When you purchase a game on GamZ, you receive a personal, non-transferable license to play the game on your own devices. You may not resell, redistribute, or share the game files.</p>
+    <h2>4. Original Content</h2>
+    <p>All games sold on GamZ are original works created by the GamZ development team. All intellectual property rights belong to GamZ / Gagandeep Singh Bansal.</p>
+    <h2>5. Free Trial</h2>
+    <p>Each game offers a 30-second free trial. Trials are limited to one per user per game. Attempting to bypass trial limits through multiple accounts is prohibited.</p>
+    <h2>6. Prohibited Conduct</h2>
+    <ul>
+      <li>Attempting to hack, reverse-engineer, or exploit any part of GamZ</li>
+      <li>Creating multiple accounts to abuse trial features</li>
+      <li>Sharing purchased game files with others</li>
+      <li>Posting false reviews or misleading feedback</li>
+    </ul>
+    <h2>7. Modifications</h2>
+    <p>GamZ reserves the right to update these terms at any time. Continued use of the platform constitutes acceptance of updated terms.</p>
+    <h2>8. Governing Law</h2>
+    <p>These terms are governed by the laws of India. Any disputes shall be subject to the jurisdiction of courts in India.</p>
+    <h2>9. Contact</h2>
+    <p>Questions about these terms: <strong style="color:var(--neon)">gamzadventure@gmail.com</strong></p>
+  </div>
+
+  <!-- REFUND -->
+  <div class="content" id="refund">
+    <div class="page-title">Refund Policy</div>
+    <p class="updated">Last updated: April 2025</p>
+    <h2>Our Commitment</h2>
+    <p>We want you to be 100% satisfied with your GamZ purchase. We offer a fair refund policy for digital game purchases.</p>
+    <h2>Eligible Refunds</h2>
+    <ul>
+      <li><strong style="color:var(--neon)">Technical Issues:</strong> If the game does not run on your system within 24 hours of purchase, you are eligible for a full refund.</li>
+      <li><strong style="color:var(--neon)">Duplicate Purchase:</strong> If you accidentally purchased the same game twice, contact us within 48 hours for a full refund of the duplicate.</li>
+      <li><strong style="color:var(--neon)">Payment Errors:</strong> If you were charged but did not receive download access, you will receive a full refund or immediate access correction.</li>
+    </ul>
+    <h2>Non-Eligible Refunds</h2>
+    <ul>
+      <li>Refund requests made more than 24 hours after purchase (for technical issues)</li>
+      <li>Games that have already been downloaded successfully</li>
+      <li>Requests citing "change of mind" after download</li>
+    </ul>
+    <h2>How to Request</h2>
+    <p>Email us at <strong style="color:var(--neon)">gamzadventure@gmail.com</strong> with your Order ID, email, and reason for refund. We will respond within 48 hours.</p>
+    <h2>Processing Time</h2>
+    <p>Approved refunds are processed within 5–7 business days and credited back to your original payment method.</p>
+  </div>
+
+  <!-- SHIPPING / DELIVERY -->
+  <div class="content" id="shipping">
+    <div class="page-title">Delivery Policy</div>
+    <p class="updated">Last updated: April 2025</p>
+    <h2>Digital Delivery</h2>
+    <p>GamZ sells digital PC games only. There is no physical shipment involved. All games are delivered digitally via a secure download link immediately after successful payment.</p>
+    <h2>Delivery Process</h2>
+    <ul>
+      <li>Step 1: Complete your payment on the game's purchase page</li>
+      <li>Step 2: You are automatically redirected to your Download page</li>
+      <li>Step 3: Click "Download Now" to get your game file</li>
+      <li>Step 4: A purchase confirmation is sent to your registered email</li>
+    </ul>
+    <h2>Download Access</h2>
+    <p>Your purchased games are permanently accessible from the "My Games" section of your account. You can re-download at any time.</p>
+    <h2>Delivery Failure</h2>
+    <p>If you are not redirected to the download page after payment, or if the download link fails, please contact us immediately at <strong style="color:var(--neon)">gamzadventure@gmail.com</strong> with your Order ID. We will resolve it within 24 hours.</p>
+    <h2>GST & Taxes</h2>
+    <p>All prices shown on GamZ are inclusive of applicable taxes. No additional charges are applied at checkout.</p>
+  </div>
+</div>
+
+<script>
+const t=localStorage.getItem('gamz_theme')||'dark';
+document.documentElement.setAttribute('data-theme',t);
+
+// Handle direct URL like privacy.html, terms.html etc.
+const page=window.location.pathname.split('/').pop().replace('.html','');
+if(['privacy','terms','refund','shipping'].includes(page)){
+  document.querySelectorAll('.content').forEach(c=>c.classList.remove('show'));
+  document.querySelectorAll('.page-tab').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById(page);
+  if(el) el.classList.add('show');
+  const btn=[...document.querySelectorAll('.page-tab')].find(b=>b.getAttribute('onclick')?.includes("'"+page+"'"));
+  if(btn) btn.classList.add('active');
+}
+
+function show(id,btn){
+  document.querySelectorAll('.content').forEach(c=>c.classList.remove('show'));
+  document.querySelectorAll('.page-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('show');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GamZ — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#06070f;--bg2:#0d0f1e;--card:#13162b;--border:#1e2240;--accent:#e8392a;--accent2:#ff6b35;--neon:#00e5ff;--neon2:#7c3aed;--text:#e8eaf6;--text2:#8892b0;--glow:rgba(232,57,42,.35)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+/* ── NAV ── */
+nav{height:64px;background:rgba(6,7,15,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 32px;gap:16px;position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.3rem;color:var(--accent);letter-spacing:2px}
+.nav-logo span{color:var(--neon)}
+.nav-badge{background:var(--accent);color:#fff;font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:1px}
+.nav-back{margin-left:auto;color:var(--text2);font-size:.9rem;font-weight:600;cursor:pointer;text-decoration:none;transition:color .3s}
+.nav-back:hover{color:var(--accent)}
+/* ── LOGIN GATE ── */
+.login-gate{display:flex;align-items:center;justify-content:center;min-height:80vh;flex-direction:column;gap:20px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px;width:360px;text-align:center}
+.login-card h2{font-family:'Orbitron',monospace;color:var(--accent);margin-bottom:8px}
+.login-card p{color:var(--text2);font-size:.9rem;margin-bottom:24px}
+.admin-input{width:100%;padding:12px 16px;background:var(--bg2);border:2px solid var(--border);border-radius:8px;color:var(--text);font-size:1rem;font-family:'Rajdhani',sans-serif;font-weight:600;margin-bottom:12px;transition:all .3s}
+.admin-input:focus{outline:none;border-color:var(--accent)}
+.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:8px;font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .3s}
+.btn-login:hover{transform:scale(1.02);box-shadow:0 6px 20px var(--glow)}
+.login-err{color:var(--accent);font-size:.85rem;margin-top:8px;display:none}
+/* ── MAIN LAYOUT ── */
+.admin-main{display:none;padding:32px}
+.page-title{font-family:'Orbitron',monospace;font-size:1.6rem;font-weight:900;margin-bottom:4px}
+.page-title span{color:var(--accent)}
+.page-sub{color:var(--text2);font-size:.9rem;margin-bottom:32px}
+/* ── STATS CARDS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:36px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.red::before{background:var(--accent)}
+.stat-card.blue::before{background:var(--neon)}
+.stat-card.purple::before{background:var(--neon2)}
+.stat-card.green::before{background:#22c55e}
+.stat-label{font-size:.8rem;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.stat-val{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900}
+.stat-card.red .stat-val{color:var(--accent)}
+.stat-card.blue .stat-val{color:var(--neon)}
+.stat-card.purple .stat-val{color:var(--neon2)}
+.stat-card.green .stat-val{color:#22c55e}
+.stat-icon{position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:36px;opacity:.15}
+/* ── SECTION ── */
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:28px;overflow:hidden}
+.section-head{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.section-head h3{font-family:'Orbitron',monospace;font-size:1rem;letter-spacing:1px}
+.search-box{padding:8px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:.9rem;font-weight:600;width:220px;transition:all .3s}
+.search-box:focus{outline:none;border-color:var(--accent)}
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+thead tr{background:var(--bg2)}
+thead th{padding:12px 16px;text-align:left;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .2s}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:12px 16px;vertical-align:middle}
+.td-name{font-weight:700;color:var(--text)}
+.td-email{color:var(--neon);font-size:.85rem}
+.td-pass{font-family:monospace;letter-spacing:2px;color:var(--text2);font-size:.9rem}
+.td-date{color:var(--text2);font-size:.82rem;white-space:nowrap}
+.td-platform{display:inline-block;padding:3px 10px;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:1px}
+.platform-email{background:rgba(232,57,42,.15);color:var(--accent)}
+.platform-google{background:rgba(0,229,255,.1);color:var(--neon)}
+.td-games{font-family:'Orbitron',monospace;color:var(--neon2);font-weight:700}
+.td-spent{font-family:'Orbitron',monospace;color:#22c55e;font-weight:700}
+.badge-new{background:rgba(34,197,94,.15);color:#22c55e;padding:2px 8px;border-radius:4px;font-size:.72rem;font-weight:700;margin-left:6px}
+.empty-row td{text-align:center;padding:40px;color:var(--text2);font-size:.95rem}
+/* ── CHART SECTION ── */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px}
+.chart-box{background:var(--bg2);border-radius:10px;padding:20px}
+.chart-box h4{font-family:'Orbitron',monospace;font-size:.85rem;color:var(--text2);letter-spacing:1px;margin-bottom:16px}
+canvas{width:100%!important}
+/* ── TABS ── */
+.admin-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 24px}
+.admin-tab{padding:14px 20px;font-weight:700;font-size:.85rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;transition:all .3s;background:none;border-top:none;border-left:none;border-right:none;font-family:'Rajdhani',sans-serif}
+.admin-tab:hover{color:var(--text)}
+.admin-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none}
+.tab-content.show{display:block}
+/* ── RESPONSIVE ── */
+@media(max-width:768px){.chart-grid{grid-template-columns:1fr}.admin-main{padding:16px}.stats-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.stats-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">GamZ<span>.</span></div>
+  <span class="nav-badge">ADMIN</span>
+  <a class="nav-back" href="index.html">← Back to Site</a>
+</nav>
+
+<!-- ══ LOGIN GATE ══ -->
+<div class="login-gate" id="loginGate">
+  <div class="login-card">
+    <div style="font-size:48px;margin-bottom:12px">🔐</div>
+    <h2>Admin Access</h2>
+    <p>This page is only for the GamZ website owner. Enter the admin password to continue.</p>
+    <input class="admin-input" type="password" id="adminPass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')checkAdmin()"/>
+    <button class="btn-login" onclick="checkAdmin()">ENTER DASHBOARD</button>
+    <div class="login-err" id="loginErr">❌ Wrong password. Try again.</div>
+    <p style="color:var(--text2);font-size:.75rem;margin-top:16px">
+      Default password: <strong style="color:var(--neon)">gamzadmin2025</strong><br>
+      Change it in the script below.
+    </p>
+  </div>
+</div>
+
+<!-- ══ ADMIN DASHBOARD ══ -->
+<div class="admin-main" id="adminMain">
+  <div class="page-title">Admin <span>Dashboard</span></div>
+  <p class="page-sub" id="lastRefresh">Loading data…</p>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card red">
+      <div class="stat-label">Total Users</div>
+      <div class="stat-val" id="statUsers">—</div>
+      <div class="stat-icon">👥</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">Total Orders</div>
+      <div class="stat-val" id="statOrders">—</div>
+      <div class="stat-icon">🛒</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-val" id="statRevenue">—</div>
+      <div class="stat-icon">💰</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-label">Games Listed</div>
+      <div class="stat-val">25</div>
+      <div class="stat-icon">🎮</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="section">
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdminTab('users',this)">👥 Users</button>
+      <button class="admin-tab" onclick="switchAdminTab('orders',this)">🛒 Orders</button>
+      <button class="admin-tab" onclick="switchAdminTab('analytics',this)">📊 Analytics</button>
+      <button class="admin-tab" onclick="switchAdminTab('games',this)">🎮 Games</button>
+    </div>
+
+    <!-- USERS TAB -->
+    <div class="tab-content show" id="tab-users">
+      <div class="section-head">
+        <h3>Registered Users</h3>
+        <input class="search-box" type="text" placeholder="Search by name or email…" oninput="filterUsers(this.value)"/>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Full Name</th>
+              <th>Email Address</th>
+              <th>Password</th>
+              <th>Platform</th>
+              <th>Games Owned</th>
+              <th>Total Spent</th>
+              <th>Joined At</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="8" class="empty-row">Loading users…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ORDERS TAB -->
+    <div class="tab-content" id="tab-orders">
+      <div class="section-head">
+        <h3>Purchase Orders</h3>
+        <input class="search-box" type="text" placeholder="Search by game or email…" oninput="filterOrders(this.value)"/>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Order ID</th>
+              <th>User Email</th>
+              <th>Game Name</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr><td colspan="7" class="empty-row">Loading orders…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ANALYTICS TAB -->
+    <div class="tab-content" id="tab-analytics">
+      <div class="chart-grid">
+        <div class="chart-box">
+          <h4>SIGNUPS PER DAY (Last 7 Days)</h4>
+          <canvas id="signupChart" height="200"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>GAMES BY CATEGORY</h4>
+          <canvas id="categoryChart" height="200"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>REVENUE BY CATEGORY (₹)</h4>
+          <canvas id="revenueChart" height="200"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>SIGNUP PLATFORMS</h4>
+          <canvas id="platformChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAMES TAB -->
+    <div class="tab-content" id="tab-games">
+      <div class="section-head">
+        <h3>Game Catalogue</h3>
+        <input class="search-box" type="text" placeholder="Search games…" oninput="filterGames(this.value)"/>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Game Name</th>
+              <th>Category</th>
+              <th>Price (₹)</th>
+              <th>Times Purchased</th>
+              <th>Revenue (₹)</th>
+            </tr>
+          </thead>
+          <tbody id="gamesTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- end .section -->
+</div><!-- end .admin-main -->
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ══════════════════════════════════════════════════════
+// CHANGE THIS PASSWORD to something only you know!
+const ADMIN_PASSWORD = "gamzadmin2025";
+// ══════════════════════════════════════════════════════
+
+// Firebase config — same as auth.html
+const firebaseConfig = {
+  apiKey:            "AIzaSyDlLUTmmgNN2IEfSSS93vwhy8bU0uMwY4s",
+  authDomain:        "gamz-eb101.firebaseapp.com",
+  projectId:         "gamz-eb101",
+  storageBucket:     "gamz-eb101.appspot.com",
+  messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
+  appId:             "REPLACE_WITH_YOUR_APP_ID"
+};
+
+let db = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+} catch(e) { console.warn("Firebase:", e.message); }
+
+// All 25 games data
+const GAMES = [
+  {id:1,name:"Neon Drift Legends",cat:"Racing",price:99},
+  {id:2,name:"Turbo Street Rush",cat:"Racing",price:149},
+  {id:3,name:"Midnight Circuit X",cat:"Racing",price:129},
+  {id:4,name:"Nitro Ridge Rally",cat:"Racing",price:99},
+  {id:5,name:"Hyper City Racers",cat:"Racing",price:119},
+  {id:6,name:"Frontline Havoc",cat:"Action",price:199},
+  {id:7,name:"Voidstrike Ops",cat:"Action",price:179},
+  {id:8,name:"Phantom Recon Delta",cat:"Action",price:199},
+  {id:9,name:"Shadow Breach",cat:"Action",price:149},
+  {id:10,name:"Storm Assault Unit",cat:"Action",price:169},
+  {id:11,name:"Metro Train Manager",cat:"Strategy",price:89},
+  {id:12,name:"Cargo Truck Tycoon",cat:"Strategy",price:99},
+  {id:13,name:"City Builder Origins",cat:"Strategy",price:129},
+  {id:14,name:"Island Farm Frontier",cat:"Strategy",price:79},
+  {id:15,name:"Deep Sea Harbor Sim",cat:"Strategy",price:109},
+  {id:16,name:"Streetball Champions 24",cat:"Sports",price:99},
+  {id:17,name:"Pro Volley Arena",cat:"Sports",price:89},
+  {id:18,name:"Ultimate Goal League",cat:"Sports",price:119},
+  {id:19,name:"Turbo Table Tennis",cat:"Sports",price:69},
+  {id:20,name:"All-Star Bowling Nights",cat:"Sports",price:79},
+  {id:21,name:"Urban Siege Zero",cat:"RPG",price:179},
+  {id:22,name:"Titan Squad Assault",cat:"RPG",price:199},
+  {id:23,name:"Crystal Dungeon Quest",cat:"RPG",price:149},
+  {id:24,name:"Mythborn Warriors",cat:"RPG",price:169},
+  {id:25,name:"Cyber Realm Siege",cat:"RPG",price:189},
+];
+
+// ── State ──────────────────────────────────────────────
+let allUsers   = [];
+let allOrders  = [];
+let charts     = {};
+
+// ── Admin login gate ───────────────────────────────────
+function checkAdmin() {
+  const pass = document.getElementById('adminPass').value;
+  if (pass === ADMIN_PASSWORD) {
+    document.getElementById('loginGate').style.display = 'none';
+    document.getElementById('adminMain').style.display = 'block';
+    loadDashboard();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('adminPass').value = '';
+  }
+}
+document.getElementById('adminPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkAdmin();
+});
+
+// ── Tab switcher ───────────────────────────────────────
+function switchAdminTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('show'));
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('show');
+  btn.classList.add('active');
+  if (name === 'analytics') setTimeout(renderCharts, 100);
+}
+
+// ══════════════════════════════════════════════════════
+// LOAD DASHBOARD
+// ══════════════════════════════════════════════════════
+async function loadDashboard() {
+  document.getElementById('lastRefresh').textContent =
+    'Last refreshed: ' + new Date().toLocaleString('en-IN');
+
+  // Try Firestore first, fall back to localStorage
+  if (db) {
+    await loadFromFirestore();
+  } else {
+    loadFromLocalStorage();
+  }
+
+  renderUsersTable(allUsers);
+  renderOrdersTable(allOrders);
+  renderGamesTable();
+  updateStats();
+}
+
+// ── Load from Firestore ────────────────────────────────
+async function loadFromFirestore() {
+  try {
+    const usersSnap  = await db.collection('users').get();
+    const ordersSnap = await db.collection('orders').get();
+
+    allUsers = usersSnap.docs.map(doc => ({
+      id:        doc.id,
+      ...doc.data(),
+      joinedAt:  doc.data().joinedAt?.toDate?.() || new Date()
+    }));
+
+    allOrders = ordersSnap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      purchasedAt: doc.data().purchasedAt?.toDate?.() || new Date()
+    }));
+
+    console.log(`✅ Loaded ${allUsers.length} users, ${allOrders.length} orders from Firestore`);
+  } catch(e) {
+    console.warn('Firestore load failed, using localStorage:', e.message);
+    loadFromLocalStorage();
+  }
+}
+
+// ── Fall back: Firestore not configured yet ───────────
+function loadFromLocalStorage() {
+  // gamz_users localStorage is no longer used — all data is in Firestore
+  // This fallback shows a setup reminder in the admin dashboard
+  allUsers  = [];
+  allOrders = [];
+  document.getElementById('lastRefresh').textContent =
+    '⚠️ Firestore not configured — add messagingSenderId & appId to gamz-firebase.js to see user data';
+  console.log('ℹ️ Firestore not configured — no data to show');
+}
+
+// ── Update stat cards ──────────────────────────────────
+function updateStats() {
+  document.getElementById('statUsers').textContent   = allUsers.length;
+  document.getElementById('statOrders').textContent  = allOrders.length;
+  const rev = allOrders.reduce((s,o) => s + (o.amount||0), 0);
+  document.getElementById('statRevenue').textContent = '₹' + rev.toLocaleString('en-IN');
+}
+
+// ══════════════════════════════════════════════════════
+// USERS TABLE
+// ══════════════════════════════════════════════════════
+function maskPassword(pass) {
+  if (!pass || pass.length === 0) return '••••••••';
+  // Show first char + stars — owner sees it's set but not the value
+  return pass.charAt(0) + '•'.repeat(Math.min(pass.length - 1, 7));
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  const dt = d instanceof Date ? d : new Date(d);
+  return dt.toLocaleString('en-IN', {
+    day:'2-digit', month:'short', year:'numeric',
+    hour:'2-digit', minute:'2-digit'
+  });
+}
+
+function isNewUser(joinedAt) {
+  const diff = Date.now() - new Date(joinedAt).getTime();
+  return diff < 1000 * 60 * 60 * 24 * 3; // within 3 days
+}
+
+function renderUsersTable(users) {
+  const tbody = document.getElementById('usersTableBody');
+  if (!users.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-row">🎮 No users have signed up yet. Share your website!</td></tr>';
+    return;
+  }
+  tbody.innerHTML = users.map((u, i) => `
+    <tr>
+      <td style="color:var(--text2);font-weight:700">${i + 1}</td>
+      <td class="td-name">
+        ${u.name || '—'}
+        ${isNewUser(u.joinedAt) ? '<span class="badge-new">NEW</span>' : ''}
+      </td>
+      <td class="td-email">${u.email || '—'}</td>
+      <td class="td-pass">${maskPassword(u.password)}</td>
+      <td>
+        <span class="td-platform ${u.platform === 'Google' ? 'platform-google' : 'platform-email'}">
+          ${u.platform === 'Google' ? '🔵 Google' : '🔴 Email'}
+        </span>
+      </td>
+      <td class="td-games">${(u.games || []).length}</td>
+      <td class="td-spent">₹${(u.totalSpent || 0).toLocaleString('en-IN')}</td>
+      <td class="td-date">${formatDate(u.joinedAt)}</td>
+    </tr>
+  `).join('');
+}
+
+function filterUsers(q) {
+  const filtered = allUsers.filter(u =>
+    (u.name  || '').toLowerCase().includes(q.toLowerCase()) ||
+    (u.email || '').toLowerCase().includes(q.toLowerCase())
+  );
+  renderUsersTable(filtered);
+}
+
+// ══════════════════════════════════════════════════════
+// ORDERS TABLE
+// ══════════════════════════════════════════════════════
+function renderOrdersTable(orders) {
+  const tbody = document.getElementById('ordersTableBody');
+  if (!orders.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-row">🛒 No purchases yet. Keep promoting your games!</td></tr>';
+    return;
+  }
+  tbody.innerHTML = orders.map((o, i) => `
+    <tr>
+      <td style="color:var(--text2);font-weight:700">${i + 1}</td>
+      <td style="font-family:monospace;font-size:.8rem;color:var(--text2)">${o.orderId || '—'}</td>
+      <td class="td-email">${o.userEmail || '—'}</td>
+      <td class="td-name">${o.gameName || '—'}</td>
+      <td class="td-spent">₹${(o.amount || 0).toLocaleString('en-IN')}</td>
+      <td class="td-date">${formatDate(o.purchasedAt)}</td>
+      <td><span style="background:rgba(34,197,94,.15);color:#22c55e;padding:3px 10px;border-radius:4px;font-size:.75rem;font-weight:700">✓ ${o.status || 'Completed'}</span></td>
+    </tr>
+  `).join('');
+}
+
+function filterOrders(q) {
+  const filtered = allOrders.filter(o =>
+    (o.gameName  || '').toLowerCase().includes(q.toLowerCase()) ||
+    (o.userEmail || '').toLowerCase().includes(q.toLowerCase())
+  );
+  renderOrdersTable(filtered);
+}
+
+// ══════════════════════════════════════════════════════
+// GAMES TABLE
+// ══════════════════════════════════════════════════════
+let allGamesFiltered = [...GAMES];
+function renderGamesTable(list) {
+  const games = list || GAMES;
+  const tbody = document.getElementById('gamesTableBody');
+
+  // Count purchases per game from orders
+  const purchases = {};
+  allOrders.forEach(o => {
+    purchases[o.gameName] = (purchases[o.gameName] || 0) + 1;
+  });
+
+  tbody.innerHTML = games.map((g, i) => {
+    const count = purchases[g.name] || 0;
+    const rev   = count * g.price;
+    return `
+      <tr>
+        <td style="color:var(--text2);font-weight:700">${i + 1}</td>
+        <td class="td-name">${g.name}</td>
+        <td><span style="background:var(--border);padding:3px 10px;border-radius:4px;font-size:.78rem;font-weight:700;color:var(--text2)">${g.cat}</span></td>
+        <td class="td-spent">₹${g.price}</td>
+        <td class="td-games">${count}</td>
+        <td class="td-spent">${rev > 0 ? '₹' + rev.toLocaleString('en-IN') : '—'}</td>
+      </tr>`;
+  }).join('');
+}
+
+function filterGames(q) {
+  const filtered = GAMES.filter(g =>
+    g.name.toLowerCase().includes(q.toLowerCase()) ||
+    g.cat.toLowerCase().includes(q.toLowerCase())
+  );
+  renderGamesTable(filtered);
+}
+
+// ══════════════════════════════════════════════════════
+// CHARTS (Data Science / Analytics)
+// ══════════════════════════════════════════════════════
+function renderCharts() {
+  const isDark = true;
+  const gridColor  = 'rgba(255,255,255,0.06)';
+  const textColor  = '#8892b0';
+
+  Chart.defaults.color = textColor;
+  Chart.defaults.borderColor = gridColor;
+
+  // Destroy old charts if any
+  Object.values(charts).forEach(c => c.destroy());
+  charts = {};
+
+  // ── 1. Signups per day (last 7 days) ──────────────
+  const days   = [];
+  const counts = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const label = d.toLocaleDateString('en-IN', { day:'2-digit', month:'short' });
+    days.push(label);
+    const dayStr = d.toDateString();
+    const count  = allUsers.filter(u => new Date(u.joinedAt).toDateString() === dayStr).length;
+    counts.push(count);
+  }
+  charts.signup = new Chart(document.getElementById('signupChart'), {
+    type: 'line',
+    data: {
+      labels: days,
+      datasets: [{
+        label: 'Signups',
+        data: counts,
+        borderColor: '#e8392a',
+        backgroundColor: 'rgba(232,57,42,0.1)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: '#e8392a',
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+      }
+    }
+  });
+
+  // ── 2. Games by category (pie) ─────────────────────
+  const catCounts = {};
+  GAMES.forEach(g => catCounts[g.cat] = (catCounts[g.cat] || 0) + 1);
+  charts.category = new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(catCounts),
+      datasets: [{
+        data: Object.values(catCounts),
+        backgroundColor: ['#e8392a','#00e5ff','#7c3aed','#22c55e','#f59e0b'],
+        borderWidth: 2,
+        borderColor: '#0d0f1e'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+
+  // ── 3. Revenue by category (bar) ──────────────────
+  const catRevenue = {};
+  allOrders.forEach(o => {
+    const g = GAMES.find(g => g.name === o.gameName);
+    if (g) catRevenue[g.cat] = (catRevenue[g.cat] || 0) + (o.amount || 0);
+  });
+  const catKeys = Object.keys(catRevenue).length
+    ? Object.keys(catRevenue)
+    : ['Racing','Action','Strategy','Sports','RPG'];
+  charts.revenue = new Chart(document.getElementById('revenueChart'), {
+    type: 'bar',
+    data: {
+      labels: catKeys,
+      datasets: [{
+        label: 'Revenue (₹)',
+        data: catKeys.map(k => catRevenue[k] || 0),
+        backgroundColor: ['#e8392a88','#00e5ff88','#7c3aed88','#22c55e88','#f59e0b88'],
+        borderColor:     ['#e8392a',  '#00e5ff',  '#7c3aed',  '#22c55e',  '#f59e0b'],
+        borderWidth: 2,
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // ── 4. Signup platform breakdown ──────────────────
+  const platforms = { 'Email/Password': 0, 'Google': 0 };
+  allUsers.forEach(u => {
+    const p = u.platform || 'Email/Password';
+    platforms[p] = (platforms[p] || 0) + 1;
+  });
+  charts.platform = new Chart(document.getElementById('platformChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Email/Password', 'Google'],
+      datasets: [{
+        data: [platforms['Email/Password'], platforms['Google']],
+        backgroundColor: ['#e8392a', '#00e5ff'],
+        borderWidth: 2,
+        borderColor: '#0d0f1e'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+}
+
+// Apply theme
+document.documentElement.setAttribute('data-theme',
+  localStorage.getItem('gamz_theme') || 'dark');
+</script>
+</body>
+</html>

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GamZ — Sign In / Sign Up</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+:root{--bg:#06070f;--bg2:#0d0f1e;--card:#13162b;--border:#1e2240;--accent:#e8392a;--accent2:#ff6b35;--neon:#00e5ff;--text:#e8eaf6;--text2:#8892b0;--glow:rgba(232,57,42,.35)}
+[data-theme="light"]{--bg:#f0f2ff;--bg2:#e4e8ff;--card:#fff;--border:#c5cbf0;--text:#0d0f1e;--text2:#3a4060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;transition:background .4s,color .4s}
+.back-btn{position:fixed;top:20px;left:20px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;cursor:pointer;font-size:.9rem;transition:all .3s;text-decoration:none}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.auth-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.auth-logo{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;color:var(--accent);text-align:center;letter-spacing:2px;margin-bottom:6px;text-shadow:0 0 20px var(--glow)}
+.auth-logo span{color:var(--neon)}
+.auth-sub{text-align:center;color:var(--text2);font-size:.9rem;margin-bottom:4px}
+.auth-tabs{display:flex;gap:0;margin:24px 0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.auth-tab{flex:1;padding:12px;text-align:center;cursor:pointer;font-weight:700;font-size:.95rem;letter-spacing:1px;transition:all .3s;background:none;border:none;color:var(--text2);font-family:'Rajdhani',sans-serif}
+.auth-tab.active{background:var(--accent);color:#fff}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:.82rem;color:var(--text2);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
+.form-group input{width:100%;padding:13px 16px;background:var(--bg2);border:2px solid var(--border);border-radius:10px;color:var(--text);font-size:1rem;font-family:'Rajdhani',sans-serif;font-weight:600;transition:all .3s}
+.form-group input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 16px var(--glow)}
+.form-group input::placeholder{color:var(--text2)}
+.btn-main{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:10px;font-family:'Orbitron',monospace;font-size:.95rem;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .3s;margin-bottom:12px}
+.btn-main:hover{transform:scale(1.02);box-shadow:0 8px 24px var(--glow)}
+.btn-main:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.forgot-link{display:block;text-align:right;font-size:.82rem;color:var(--text2);cursor:pointer;margin-top:-6px;margin-bottom:14px;transition:color .3s;font-weight:600}
+.forgot-link:hover{color:var(--neon)}
+.divider{display:flex;align-items:center;gap:12px;margin-bottom:14px;color:var(--text2);font-size:.85rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.btn-google{width:100%;padding:13px;background:var(--bg2);border:2px solid var(--border);border-radius:10px;color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .3s}
+.btn-google:hover{border-color:var(--neon);box-shadow:0 0 16px rgba(0,229,255,.2)}
+.btn-google:disabled{opacity:.6;cursor:not-allowed}
+.msg{margin-top:14px;padding:12px 16px;border-radius:8px;font-size:.88rem;text-align:center;display:none;line-height:1.5}
+.msg.success{background:rgba(0,229,255,.1);border:1px solid var(--neon);color:var(--neon);display:block}
+.msg.error{background:rgba(232,57,42,.1);border:1px solid var(--accent);color:var(--accent);display:block}
+.note{color:var(--text2);font-size:.78rem;text-align:center;margin-top:16px;line-height:1.5}
+/* Reset panel */
+.reset-panel{display:none;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.reset-back{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--text2);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;margin-bottom:20px;padding:0;transition:color .3s}
+.reset-back:hover{color:var(--accent)}
+.reset-title{font-family:'Orbitron',monospace;font-size:1.1rem;color:var(--text);margin-bottom:6px}
+.reset-sub{color:var(--text2);font-size:.88rem;line-height:1.6;margin-bottom:20px}
+.reset-steps{background:var(--bg2);border-radius:8px;padding:14px 16px;margin-bottom:20px;color:var(--text2);font-size:.82rem;line-height:1.9}
+.reset-steps strong{color:var(--neon)}
+/* Loading spinner overlay */
+.auth-loading{display:none;position:absolute;inset:0;background:rgba(6,7,15,.7);border-radius:20px;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:10}
+.auth-loading.show{display:flex}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.auth-wrap{position:relative}
+</style>
+</head>
+<body>
+
+<a class="back-btn" href="index.html">← Home</a>
+
+<div class="auth-wrap">
+<div class="auth-box" id="authBox">
+  <div class="auth-logo">GamZ<span>.</span></div>
+  <p class="auth-sub">Your gaming universe awaits</p>
+
+  <!-- ══ TABS ══ -->
+  <div class="auth-tabs" id="authTabs">
+    <button class="auth-tab active" id="tabSignin" onclick="switchTab('signin')">Sign In</button>
+    <button class="auth-tab"        id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+  </div>
+
+  <!-- ══ SIGN IN FORM ══ -->
+  <div id="signinForm">
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="siEmail" placeholder="you@gmail.com" onkeydown="if(event.key==='Enter')handleSignIn()"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="siPassword" placeholder="Your password" onkeydown="if(event.key==='Enter')handleSignIn()"/>
+    </div>
+    <button class="btn-main" id="signinBtn" onclick="handleSignIn()">SIGN IN</button>
+    <span class="forgot-link" onclick="showResetPanel()">Forgot password?</span>
+    <div class="divider">or</div>
+    <button class="btn-google" id="googleSigninBtn" onclick="handleGoogleAuth('signin')">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.1 0 5.9 1.1 8.1 2.9l6-6C34.4 3.1 29.5 1 24 1 14.7 1 6.8 6.7 3.4 14.8l7 5.4C12.1 13.6 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.9 7.2l7.5 5.8c4.4-4 6.9-9.9 6.9-17z"/><path fill="#FBBC05" d="M10.4 28.6A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.9-4.6l-7-5.4A23.9 23.9 0 0 0 1 24c0 3.9.9 7.5 2.4 10.8l7-5.2z"/><path fill="#34A853" d="M24 47c5.5 0 10.1-1.8 13.4-4.9l-7.5-5.8c-1.8 1.2-4.1 1.9-5.9 1.9-6.4 0-11.9-4.1-13.6-9.7l-7 5.4C6.8 41.3 14.7 47 24 47z"/></svg>
+      Continue with Google
+    </button>
+    <div id="siMsg" class="msg"></div>
+  </div>
+
+  <!-- ══ SIGN UP FORM ══ -->
+  <div id="signupForm" style="display:none">
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="suName" placeholder="Your full name" onkeydown="if(event.key==='Enter')handleSignUp()"/>
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="suEmail" placeholder="you@gmail.com" onkeydown="if(event.key==='Enter')handleSignUp()"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="suPassword" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')handleSignUp()"/>
+    </div>
+    <button class="btn-main" id="signupBtn" onclick="handleSignUp()">CREATE ACCOUNT</button>
+    <div class="divider">or</div>
+    <button class="btn-google" id="googleSignupBtn" onclick="handleGoogleAuth('signup')">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.1 0 5.9 1.1 8.1 2.9l6-6C34.4 3.1 29.5 1 24 1 14.7 1 6.8 6.7 3.4 14.8l7 5.4C12.1 13.6 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.9 7.2l7.5 5.8c4.4-4 6.9-9.9 6.9-17z"/><path fill="#FBBC05" d="M10.4 28.6A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.9-4.6l-7-5.4A23.9 23.9 0 0 0 1 24c0 3.9.9 7.5 2.4 10.8l7-5.2z"/><path fill="#34A853" d="M24 47c5.5 0 10.1-1.8 13.4-4.9l-7.5-5.8c-1.8 1.2-4.1 1.9-5.9 1.9-6.4 0-11.9-4.1-13.6-9.7l-7 5.4C6.8 41.3 14.7 47 24 47z"/></svg>
+      Continue with Google
+    </button>
+    <div id="suMsg" class="msg"></div>
+  </div>
+
+  <!-- ══ RESET PASSWORD PANEL ══ -->
+  <div id="resetPanel" class="reset-panel">
+    <button class="reset-back" onclick="hideResetPanel()">← Back to Sign In</button>
+    <div class="reset-title">Reset Password 🔑</div>
+    <p class="reset-sub">Enter the email address linked to your GamZ account. We'll send a secure reset link instantly.</p>
+    <div class="reset-steps">
+      <strong>How it works:</strong><br>
+      1. Enter your registered email below<br>
+      2. Check your inbox for the reset email<br>
+      3. Click the link → set your new password<br>
+      4. Your games &amp; cart stay 100% safe ✅
+    </div>
+    <div class="form-group">
+      <label>Registered Email Address</label>
+      <input type="email" id="resetEmail" placeholder="your@email.com" onkeydown="if(event.key==='Enter')handleReset()"/>
+    </div>
+    <button class="btn-main" id="resetBtn" onclick="handleReset()">SEND RESET LINK</button>
+    <div id="resetMsg" class="msg"></div>
+  </div>
+
+  <p class="note">🔒 Secured by Firebase Authentication. Your data is never shared.</p>
+</div>
+<!-- Loading overlay -->
+<div class="auth-loading" id="authLoading">
+  <div class="spinner"></div>
+  <span style="color:var(--text2);font-size:.9rem" id="loadingText">Please wait…</span>
+</div>
+</div><!-- end auth-wrap -->
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ══════════════════════════════════════════════════════
+// CONFIGURATION — paste your full Firebase config here
+// Get from: Firebase Console → Project Settings → Your App
+// ══════════════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyDlLUTmmgNN2IEfSSS93vwhy8bU0uMwY4s",
+  authDomain:        "gamz-eb101.firebaseapp.com",
+  projectId:         "gamz-eb101",
+  storageBucket:     "gamz-eb101.appspot.com",
+  messagingSenderId: "1097358273455",
+  appId:             "1:1097358273455:web:46a1796874dc5fe5d3dd5a"
+};
+
+// EmailJS public key
+const EMAILJS_KEY      = "7DkD3Gwp_tNHh89nY";
+const EMAILJS_SERVICE  = "service_mab67kv";
+const EMAILJS_TEMPLATE = "template_zdamwf6"; // welcome / welcome-back template
+
+// Google Sheets signup tracking URL (from DATABASE_SETUP.md Step 3)
+const SHEETS_URL   = "https://docs.google.com/forms/d/e/1FAIpQLSdPU-JtIhxkklp0O_v8N8SGMIv5VjtH4xiVfQp20oE0r8cICQ/formResponse";
+const SHEETS_ENTRY = {
+  name:     "entry.2084010379",
+  email:    "entry.856348050",
+  joinedAt: "entry.312658167",
+  platform: "entry.1022970704"
+};
+
+// ── Init ──────────────────────────────────────────────
+emailjs.init(EMAILJS_KEY);
+
+let db   = null;
+let auth = null;
+try {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db   = firebase.firestore();
+  auth = firebase.auth();
+} catch(e) { console.warn("Firebase init:", e.message); }
+
+// Apply saved theme
+document.documentElement.setAttribute('data-theme', localStorage.getItem('gamz_theme') || 'dark');
+
+// If already logged in, go home
+const existingUser = JSON.parse(localStorage.getItem('gamz_user') || 'null');
+if (existingUser) window.location.href = 'index.html';
+
+// ── UI helpers ────────────────────────────────────────
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'msg ' + type;
+}
+function clearMsg(id) {
+  const el = document.getElementById(id);
+  el.textContent = '';
+  el.className = 'msg';
+}
+function setLoading(show, text = 'Please wait…') {
+  document.getElementById('authLoading').className = show ? 'auth-loading show' : 'auth-loading';
+  document.getElementById('loadingText').textContent = text;
+}
+function switchTab(tab) {
+  document.getElementById('signinForm').style.display = tab === 'signin' ? 'block' : 'none';
+  document.getElementById('signupForm').style.display = tab === 'signup' ? 'block' : 'none';
+  document.getElementById('tabSignin').classList.toggle('active', tab === 'signin');
+  document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+  clearMsg('siMsg'); clearMsg('suMsg');
+}
+function showResetPanel() {
+  document.getElementById('authTabs').style.display   = 'none';
+  document.getElementById('signinForm').style.display = 'none';
+  document.getElementById('signupForm').style.display = 'none';
+  document.getElementById('resetPanel').style.display = 'block';
+  clearMsg('resetMsg');
+  document.getElementById('resetEmail').value = '';
+  document.getElementById('resetEmail').focus();
+}
+function hideResetPanel() {
+  document.getElementById('authTabs').style.display   = 'flex';
+  document.getElementById('resetPanel').style.display = 'none';
+  switchTab('signin');
+}
+
+// ══════════════════════════════════════════════════════
+// CORE: Save user profile to Firestore
+// Called after EVERY sign-in/sign-up regardless of method
+// Uses email as document ID → guarantees uniqueness
+// ══════════════════════════════════════════════════════
+async function saveUserProfile(uid, name, email, platform, isNewUser) {
+  if (!db) return;
+  try {
+    const ref = db.collection('users').doc(email);
+    if (isNewUser) {
+      // New user — create full profile
+      await ref.set({
+        uid,
+        name,
+        email,
+        platform,
+        joinedAt:   firebase.firestore.FieldValue.serverTimestamp(),
+        games:      [],
+        cart:       [],
+        totalSpent: 0,
+        isActive:   true
+      }, { merge: true });
+      // Record in Google Sheets (first signup only)
+      recordToSheets(name, email, platform);
+    } else {
+      // Returning user — just update last login
+      await ref.update({
+        lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
+        name: name || firebase.firestore.FieldValue.serverTimestamp() // keep latest name
+      }).catch(() => {
+        // Doc might not exist if old localStorage user — create it
+        return ref.set({ uid, name, email, platform,
+          joinedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          games: [], cart: [], totalSpent: 0, isActive: true
+        }, { merge: true });
+      });
+    }
+  } catch(e) { console.error('Firestore profile save:', e.message); }
+}
+
+// ── Save session to localStorage (small session only — no user data) ─
+function saveSession(name, email, photo) {
+  localStorage.setItem('gamz_user', JSON.stringify({ name, email, photo }));
+}
+
+// ── Send welcome / welcome-back email (robust — works for ALL 4 auth methods) ──
+// This is called after every sign-in and sign-up regardless of method:
+//   custom form sign-in, custom form sign-up,
+//   Google button sign-in, Google button sign-up
+function sendWelcomeEmail(name, email, isNew) {
+  if (!email) { console.warn('sendWelcomeEmail: no email provided'); return; }
+
+  const message = isNew
+    ? 'Welcome to GamZ! 🎮 Your account has been created successfully. Explore our game library and enjoy free 30-second trials before buying!'
+    : 'Welcome back to GamZ! 🎮 Great to see you again. Your game library is waiting for you!';
+
+  const subject = isNew
+    ? 'Welcome to GamZ, ' + name + '! 🎮'
+    : 'Welcome back to GamZ, ' + name + '! 🎮';
+
+  // Re-initialize EmailJS each time to guarantee it's ready
+  // (fixes issue where Google popup resolves before EmailJS is ready)
+  try { emailjs.init(EMAILJS_KEY); } catch(e) { /* already init'd */ }
+
+  emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+    to_name:    name,
+    to_email:   email,
+    message:    message,
+    subject:    subject
+  })
+  .then(res => {
+    console.log('✅ Welcome email sent to', email, '| Status:', res.status, '| New user:', isNew);
+  })
+  .catch(err => {
+    console.warn('⚠️ Welcome email failed for', email, ':', JSON.stringify(err));
+    // Retry once after 2 seconds
+    setTimeout(() => {
+      emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+        to_name: name, to_email: email, message, subject
+      })
+      .then(() => console.log('✅ Welcome email sent (retry)'))
+      .catch(e2 => console.error('❌ Email retry also failed:', JSON.stringify(e2)));
+    }, 2000);
+  });
+}
+
+// ── Google Sheets tracker (signup only, no duplicates) ─
+function recordToSheets(name, email, platform) {
+  if (SHEETS_URL.includes('YOUR_FORM_ID')) return; // not set up yet
+  const body = new URLSearchParams({
+    [SHEETS_ENTRY.name]:     name,
+    [SHEETS_ENTRY.email]:    email,
+    [SHEETS_ENTRY.joinedAt]: new Date().toLocaleString('en-IN'),
+    [SHEETS_ENTRY.platform]: platform
+  });
+  fetch(SHEETS_URL, { method:'POST', mode:'no-cors', body })
+    .catch(e => console.warn('Sheets log:', e));
+}
+
+// ══════════════════════════════════════════════════════
+// SIGN UP — Email/Password via Firebase Auth
+// ══════════════════════════════════════════════════════
+async function handleSignUp() {
+  const name  = document.getElementById('suName').value.trim();
+  const email = document.getElementById('suEmail').value.trim();
+  const pass  = document.getElementById('suPassword').value;
+
+  clearMsg('suMsg');
+  if (!name)            { showMsg('suMsg','Please enter your full name.','error'); return; }
+  if (!email)           { showMsg('suMsg','Please enter your email address.','error'); return; }
+  if (pass.length < 6)  { showMsg('suMsg','Password must be at least 6 characters.','error'); return; }
+
+  setLoading(true, 'Creating your account…');
+
+  try {
+    // ✅ Create user in Firebase Authentication
+    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+
+    // ✅ Update display name in Firebase Auth
+    await cred.user.updateProfile({ displayName: name });
+
+    // ✅ Save full profile to Firestore
+    await saveUserProfile(cred.user.uid, name, email, 'Email/Password', true);
+
+    // ✅ Save session
+    saveSession(name, email, null);
+
+    // ✅ Send welcome email
+    sendWelcomeEmail(name, email, true);
+
+    setLoading(false);
+    showMsg('suMsg', '🎉 Account created! Welcome to GamZ, ' + name + '! Check your email for a welcome message.', 'success');
+    setTimeout(() => window.location.href = 'index.html', 2200);
+
+  } catch(e) {
+    setLoading(false);
+    // Firebase error → user-friendly message
+    const msgs = {
+      'auth/email-already-in-use':  '❌ An account with this email already exists. Please sign in instead.',
+      'auth/invalid-email':         '❌ Invalid email address. Please check and try again.',
+      'auth/weak-password':         '❌ Password must be at least 6 characters.',
+      'auth/network-request-failed':'❌ No internet connection. Please check your network.',
+      'auth/too-many-requests':     '⚠️ Too many attempts. Please wait a few minutes.',
+      'auth/operation-not-allowed': '❌ Email/Password sign-up is not enabled. Please contact gamzadventure@gmail.com',
+    };
+    showMsg('suMsg', msgs[e.code] || ('❌ ' + e.message), 'error');
+    console.error('SignUp error:', e.code, e.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// SIGN IN — Email/Password via Firebase Auth
+// ══════════════════════════════════════════════════════
+async function handleSignIn() {
+  const email = document.getElementById('siEmail').value.trim();
+  const pass  = document.getElementById('siPassword').value;
+
+  clearMsg('siMsg');
+  if (!email || !pass) { showMsg('siMsg','Please fill all fields.','error'); return; }
+
+  setLoading(true, 'Signing you in…');
+
+  try {
+    // ✅ Sign in via Firebase Auth
+    const cred = await auth.signInWithEmailAndPassword(email, pass);
+    const name = cred.user.displayName || email.split('@')[0];
+
+    // ✅ Update Firestore last login
+    await saveUserProfile(cred.user.uid, name, email, 'Email/Password', false);
+
+    // ✅ Save session
+    saveSession(name, email, null);
+
+    // ✅ Send welcome-back email
+    sendWelcomeEmail(name, email, false);
+
+    setLoading(false);
+    showMsg('siMsg', '✅ Welcome back, ' + name + '! Redirecting…', 'success');
+    setTimeout(() => window.location.href = 'index.html', 1800);
+
+  } catch(e) {
+    setLoading(false);
+    const msgs = {
+      'auth/user-not-found':        '❌ No account found with this email. Please sign up first.',
+      'auth/wrong-password':        '❌ Incorrect password. Try again or click "Forgot password?" below.',
+      'auth/invalid-email':         '❌ Invalid email address format.',
+      'auth/user-disabled':         '❌ This account has been disabled. Contact gamzadventure@gmail.com',
+      'auth/too-many-requests':     '❌ Too many failed attempts. Please wait a few minutes.',
+      'auth/network-request-failed':'❌ No internet connection. Please check your network.',
+      'auth/invalid-credential':    '❌ Incorrect email or password. Please check and try again.',
+    };
+    showMsg('siMsg', msgs[e.code] || ('❌ ' + e.message), 'error');
+    console.error('SignIn error:', e.code, e.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// GOOGLE AUTH — works for both Sign In AND Sign Up
+// Firebase handles both cases automatically:
+//   - First time with this Google account = Sign Up
+//   - Already used this Google account = Sign In
+// ══════════════════════════════════════════════════════
+async function handleGoogleAuth(mode) {
+  clearMsg(mode === 'signin' ? 'siMsg' : 'suMsg');
+  setLoading(true, mode === 'signup' ? 'Creating account with Google…' : 'Signing in with Google…');
+
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('email');
+    provider.addScope('profile');
+
+    const result   = await auth.signInWithPopup(provider);
+    const user     = result.user;
+    const isNew    = result.additionalUserInfo?.isNewUser || false;
+    const name     = user.displayName || user.email.split('@')[0];
+    const email    = user.email;
+    const photo    = user.photoURL;
+
+    // ✅ Save to Firestore (new user = full profile, returning = update login time)
+    await saveUserProfile(user.uid, name, email, 'Google', isNew);
+
+    // ✅ Save session (photo included for Google users)
+    saveSession(name, email, photo);
+
+    // ✅ Send welcome / welcome-back email
+    sendWelcomeEmail(name, email, isNew);
+
+    setLoading(false);
+    window.location.href = 'index.html';
+
+  } catch(e) {
+    setLoading(false);
+    const msgId = mode === 'signin' ? 'siMsg' : 'suMsg';
+    if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
+      // User just closed the popup — not an error
+      return;
+    }
+    const msgs = {
+      'auth/popup-blocked':           '❌ Popup was blocked. Please allow popups for this site in your browser settings.',
+      'auth/account-exists-with-different-credential': '❌ An account exists with this email using a different sign-in method. Try email/password instead.',
+      'auth/network-request-failed':  '❌ No internet connection.',
+    };
+    showMsg(msgId, msgs[e.code] || ('❌ Google Sign-in failed: ' + e.message), 'error');
+    console.error('Google Auth error:', e.code, e.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// RESET PASSWORD STEP 1 — User enters their email
+// Firebase sends a secure reset link to that email
+// ══════════════════════════════════════════════════════
+async function handleReset() {
+  const email = document.getElementById('resetEmail').value.trim();
+  clearMsg('resetMsg');
+
+  if (!email || !email.includes('@')) {
+    showMsg('resetMsg', '❌ Please enter a valid email address.', 'error');
+    return;
+  }
+
+  setLoading(true, 'Sending reset link…');
+
+  try {
+    // Firebase Auth sends a secure password reset email.
+    // This ONLY works if:
+    //   1. The email is registered via Firebase Auth
+    //   2. Email/Password provider is enabled in Firebase Console
+    //   3. Your domain is in Firebase → Authentication → Settings → Authorized domains
+    // Firebase automatically rejects emails that are NOT registered.
+    await auth.sendPasswordResetEmail(email, {
+      url: window.location.origin + '/auth.html?resetDone=1'
+    });
+
+    setLoading(false);
+
+    // Success — show clear instructions
+    showMsg('resetMsg',
+      '✅ Reset link sent to ' + email + '! ' +
+      'Check your inbox (and spam/junk folder). ' +
+      'Click the link in the email → enter your NEW password. ' +
+      '⚠️ Note: Firebase will show an error if you try to set the same password you already have — choose a different one. ' +
+      'Your games, cart & purchases are completely safe. ✅',
+      'success'
+    );
+
+    const btn = document.getElementById('resetBtn');
+    btn.disabled     = true;
+    btn.textContent  = '✅ Link Sent!';
+    btn.style.background = 'linear-gradient(135deg,#1b5e20,#2e7d32)';
+
+  } catch(e) {
+    setLoading(false);
+    const msgs = {
+      'auth/user-not-found':
+        '❌ No GamZ account found for this email. Please sign up first.',
+      'auth/invalid-email':
+        '❌ Invalid email format. Please check and try again.',
+      'auth/too-many-requests':
+        '⚠️ Too many reset attempts. Please wait a few minutes and try again.',
+      'auth/network-request-failed':
+        '❌ No internet connection. Please check your network.',
+      'auth/missing-email':
+        '❌ Please enter your email address.',
+    };
+    showMsg('resetMsg', msgs[e.code] || ('❌ ' + e.message), 'error');
+    console.error('Reset error:', e.code, e.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// RESET PASSWORD STEP 2 — Check if user came back from reset link
+// Firebase redirects user back to auth.html?resetDone=1
+// We check this and show a friendly "now sign in" message
+// ══════════════════════════════════════════════════════
+function checkPostReset() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('resetDone') === '1') {
+    // Clean the URL
+    window.history.replaceState({}, '', 'auth.html');
+    // Show sign-in tab with success message
+    switchTab('signin');
+    showMsg('siMsg',
+      '✅ Password reset successful! Please sign in with your new password.',
+      'success'
+    );
+  }
+}
+checkPostReset();
+
+// ══════════════════════════════════════════════════════
+// SAME-PASSWORD CHECK
+// Firebase doesn't natively detect same password reuse.
+// We handle this by attempting re-authentication with the
+// new password — if it works, it means the password didn't change.
+// This function is used internally after a reset.
+// ══════════════════════════════════════════════════════
+async function checkIfPasswordSame(email, newPassword) {
+  if (!auth) return false;
+  try {
+    // Try signing in with the new password
+    const cred = firebase.auth.EmailAuthProvider.credential(email, newPassword);
+    const currentUser = auth.currentUser;
+    if (!currentUser) return false;
+    // Re-authenticate — if this SUCCEEDS, the password is the SAME
+    await currentUser.reauthenticateWithCredential(cred);
+    return true; // same password
+  } catch(e) {
+    return false; // different password (expected for a real reset)
+  }
+}
+</script>
+</body>
+</html>

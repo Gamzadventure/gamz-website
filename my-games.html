@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GamZ — My Profile & Games</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#06070f;--bg2:#0d0f1e;--card:#13162b;--border:#1e2240;--accent:#e8392a;--accent2:#ff6b35;--neon:#00e5ff;--neon2:#7c3aed;--text:#e8eaf6;--text2:#8892b0;--glow:rgba(232,57,42,.35)}
+[data-theme="light"]{--bg:#f0f2ff;--bg2:#e4e8ff;--card:#fff;--border:#c5cbf0;--text:#0d0f1e;--text2:#3a4060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .4s}
+a{text-decoration:none;color:inherit}
+nav{height:64px;background:rgba(6,7,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(16px,4vw,48px);position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.4rem;color:var(--accent);cursor:pointer;letter-spacing:2px}
+.nav-logo span{color:var(--neon)}
+.back-link{margin-left:auto;color:var(--text2);font-weight:600;font-size:.9rem;transition:color .3s}
+.back-link:hover{color:var(--accent)}
+.page{max-width:960px;margin:0 auto;padding:40px clamp(16px,4vw,40px)}
+/* Tabs */
+.tabs{display:flex;gap:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:32px;width:fit-content}
+.tab{padding:12px 28px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .3s;font-family:'Rajdhani',sans-serif;font-size:.95rem;background:none;border:none;color:var(--text2)}
+.tab.active{background:var(--accent);color:#fff}
+/* Loader */
+.loader{text-align:center;padding:60px;color:var(--text2)}
+.loader .spin{font-size:36px;animation:spin 1s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* DB source badge */
+.source-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:6px;font-size:.78rem;font-weight:700;margin-bottom:20px}
+.source-badge.firestore{background:rgba(34,197,94,.1);border:1px solid #22c55e;color:#22c55e}
+.source-badge.local{background:rgba(255,193,7,.1);border:1px solid #ffc107;color:#ffc107}
+/* Profile */
+.profile-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;gap:24px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--neon2));display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;font-family:'Orbitron',monospace;border:3px solid var(--border);flex-shrink:0;overflow:hidden}
+.profile-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.profile-details h2{font-family:'Orbitron',monospace;font-size:1.3rem;margin-bottom:6px}
+.profile-details p{color:var(--text2);font-size:.9rem;margin-bottom:4px}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+.stat-val{font-family:'Orbitron',monospace;font-size:1.8rem;font-weight:900;color:var(--neon)}
+.stat-label{color:var(--text2);font-size:.82rem;margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+/* Games grid */
+.games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.game-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .3s;cursor:pointer}
+.game-card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.game-cover{width:100%;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:.7rem;font-weight:900;text-align:center;padding:12px}
+.game-body{padding:12px}
+.game-name{font-weight:700;font-size:.95rem;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.game-meta{font-size:.75rem;color:var(--text2);margin-bottom:10px}
+.btn-redownload{display:block;width:100%;padding:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:6px;font-weight:700;font-size:.8rem;cursor:pointer;transition:all .3s;letter-spacing:1px;font-family:'Rajdhani',sans-serif;text-align:center}
+.btn-redownload:hover{box-shadow:0 4px 16px var(--glow)}
+/* Empty state */
+.empty-state{text-align:center;padding:64px 0;color:var(--text2)}
+.empty-state .icon{font-size:60px;margin-bottom:16px}
+.empty-state h3{font-family:'Orbitron',monospace;color:var(--text);margin-bottom:10px}
+.empty-state p{margin-bottom:20px;line-height:1.6}
+.btn-shop{display:inline-block;padding:12px 28px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-radius:10px;font-weight:700;cursor:pointer;transition:all .3s;font-family:'Orbitron',monospace;font-size:.85rem;letter-spacing:1px}
+.btn-shop:hover{transform:scale(1.03);box-shadow:0 6px 20px var(--glow)}
+/* Logout btn */
+.btn-logout{padding:10px 24px;background:var(--card);border:2px solid var(--border);color:var(--text2);border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;cursor:pointer;transition:all .3s;font-size:.9rem}
+.btn-logout:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:600px){.profile-stats{grid-template-columns:1fr 1fr}.profile-card{flex-direction:column;text-align:center}}
+@media(max-width:400px){.profile-stats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo" onclick="window.location='index.html'">GamZ<span>.</span></div>
+  <a class="back-link" href="index.html">← Store</a>
+</nav>
+
+<div class="page">
+  <div class="tabs">
+    <button class="tab active" id="tabBtnProfile" onclick="switchTab('profile',this)">👤 Profile</button>
+    <button class="tab" id="tabBtnGames"   onclick="switchTab('games',this)">🎮 My Games</button>
+  </div>
+
+  <!-- source badge -->
+  <div class="source-badge" id="sourceBadge">⏳ Loading…</div>
+
+  <!-- Profile Tab -->
+  <div id="tabProfile">
+    <div class="profile-card" id="profileCard">
+      <div class="loader"><span class="spin">⏳</span></div>
+    </div>
+    <div class="profile-stats" id="profileStats"></div>
+    <button class="btn-logout" onclick="logout()">🚪 Sign Out</button>
+  </div>
+
+  <!-- Games Tab -->
+  <div id="tabGames" style="display:none">
+    <div id="gamesContent">
+      <div class="loader"><span class="spin">⏳</span> Loading your games from database…</div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="gamz-firebase.js"></script>
+
+<script>
+document.documentElement.setAttribute('data-theme', localStorage.getItem('gamz_theme')||'dark');
+
+const COLORS={1:["#ff00ff","#00ffff"],2:["#ff6b00","#ffcc00"],3:["#0055ff","#00ffcc"],4:["#ff4400","#ff8800"],5:["#aa00ff","#ff00aa"],6:["#5d4037","#ff6f00"],7:["#1a237e","#00e5ff"],8:["#263238","#00bcd4"],9:["#212121","#f44336"],10:["#1b5e20","#69f0ae"],11:["#e65100","#ffa726"],12:["#33691e","#cddc39"],13:["#0d47a1","#40c4ff"],14:["#1b5e20","#76ff03"],15:["#006064","#18ffff"],16:["#f57f17","#ffee58"],17:["#880e4f","#f48fb1"],18:["#1a237e","#448aff"],19:["#b71c1c","#ef9a9a"],20:["#4a148c","#ea80fc"],21:["#37474f","#76ff03"],22:["#b71c1c","#ff6d00"],23:["#4a148c","#e040fb"],24:["#1a237e","#ffd740"],25:["#006064","#00e5ff"]};
+
+// Redirect to login if not signed in
+const user = gamzCurrentUser();
+if (!user) { window.location.href = 'auth.html'; }
+
+let myGames    = [];
+let userData   = {};
+let dataSource = 'local'; // 'firestore' or 'local'
+
+// ── Load all user data ─────────────────────────────────
+async function loadUserData() {
+  const badge = document.getElementById('sourceBadge');
+
+  // Try Firestore first
+  if (gamzDB) {
+    try {
+      const doc = await gamzDB.collection('users').doc(user.email).get();
+      if (doc.exists) {
+        userData   = doc.data();
+        myGames    = userData.games || [];
+        dataSource = 'firestore';
+        badge.className   = 'source-badge firestore';
+        badge.textContent = '✅ Data loaded from Firestore database';
+      } else {
+        throw new Error('No Firestore doc');
+      }
+    } catch(e) {
+      console.warn('Firestore read failed, using localStorage:', e.message);
+      loadFromLocal();
+    }
+  } else {
+    loadFromLocal();
+  }
+
+  renderProfile();
+  renderGames();
+}
+
+function loadFromLocal() {
+  // Firebase not configured yet — use session data only
+  const badge = document.getElementById('sourceBadge');
+  badge.className   = 'source-badge local';
+  badge.textContent = '⚠️ Firestore not configured — add messagingSenderId & appId to gamz-firebase.js';
+  dataSource = 'local';
+  // Use session user data (name/email from login session)
+  userData = {
+    name:       user.name  || 'Player',
+    email:      user.email || '',
+    games:      [],
+    totalSpent: 0,
+    joinedAt:   new Date(),
+    platform:   'Email/Password'
+  };
+  myGames = [];
+}
+
+// ── Render profile tab ─────────────────────────────────
+function renderProfile() {
+  const joinDate = userData.joinedAt
+    ? new Date(userData.joinedAt.toDate ? userData.joinedAt.toDate() : userData.joinedAt)
+        .toLocaleDateString('en-IN', {year:'numeric',month:'long',day:'numeric'})
+    : '—';
+
+  const avatarHTML = user.photo
+    ? `<img src="${user.photo}" alt=""/>`
+    : (userData.name || user.name || 'P').charAt(0).toUpperCase();
+
+  document.getElementById('profileCard').innerHTML = `
+    <div class="profile-avatar">${avatarHTML}</div>
+    <div class="profile-details">
+      <h2>${userData.name || user.name || 'Player'}</h2>
+      <p>📧 ${user.email}</p>
+      <p>📅 Joined: ${joinDate}</p>
+      <p>🔑 Platform: ${userData.platform || 'Email/Password'}</p>
+      <p>💾 Data source: <strong style="color:${dataSource==='firestore'?'#22c55e':'#ffc107'}">${dataSource==='firestore'?'Firestore Database':'Local Storage'}</strong></p>
+    </div>`;
+
+  document.getElementById('profileStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-val">${myGames.length}</div>
+      <div class="stat-label">Games Owned</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--accent)">₹${(userData.totalSpent||0).toLocaleString('en-IN')}</div>
+      <div class="stat-label">Total Spent</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--neon2)">${myGames.length > 0 ? '🔥' : '⭐'}</div>
+      <div class="stat-label">${myGames.length >= 5 ? 'Pro Gamer' : myGames.length > 0 ? 'Active Gamer' : 'New Player'}</div>
+    </div>`;
+}
+
+// ── Render games tab ───────────────────────────────────
+function renderGames() {
+  const el = document.getElementById('gamesContent');
+  if (!myGames.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="icon">🎮</div>
+      <h3>No Games Yet</h3>
+      <p>You haven't purchased any games yet.<br>Browse our collection and grab your first title!</p>
+      <a class="btn-shop" href="index.html">Browse Games</a>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = `<div class="games-grid">${myGames.map(g => {
+    const c = COLORS[g.id] || ["#333","#999"];
+    const d = g.purchasedAt
+      ? new Date(g.purchasedAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})
+      : '—';
+    return `<div class="game-card" onclick="window.location='game-detail.html?id=${g.id}'">
+      <div class="game-cover" style="background:linear-gradient(160deg,${c[0]}44,${c[1]}33,#0d0f1e);color:${c[1]}">${g.name.toUpperCase()}</div>
+      <div class="game-body">
+        <div class="game-name">${g.name}</div>
+        <div class="game-meta">₹${g.price} • Purchased ${d}</div>
+        <a class="btn-redownload" href="download.html?id=${g.id}" onclick="event.stopPropagation()">⬇ Re-Download</a>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ── Tab switcher ───────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tabProfile').style.display = name === 'profile' ? 'block' : 'none';
+  document.getElementById('tabGames').style.display   = name === 'games'   ? 'block' : 'none';
+}
+
+// ── Logout ─────────────────────────────────────────────
+function logout() {
+  localStorage.removeItem('gamz_user');
+  if (gamzAuth) gamzAuth.signOut().catch(()=>{});
+  window.location.href = 'index.html';
+}
+
+loadUserData();
+</script>
+</body>
+</html>
