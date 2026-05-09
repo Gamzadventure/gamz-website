@@ -716,17 +716,17 @@ footer{
       <ellipse cx="118" cy="46" rx="12" ry="16" fill="#1a1f3c" stroke="#e8392a" stroke-width="1.5" transform="rotate(15,118,46)"/>
       <ellipse cx="118" cy="46" rx="6" ry="9" fill="#e8392a" opacity="0.6" transform="rotate(15,118,46)"/>
       <!-- Left eye white -->
-      <ellipse cx="62" cy="68" rx="16" ry="16" fill="#e8eaf6"/>
+      <ellipse cx="62" cy="68" rx="11" ry="11" fill="#e8eaf6"/>
       <!-- Right eye white -->
-      <ellipse cx="98" cy="68" rx="16" ry="16" fill="#e8eaf6"/>
+      <ellipse cx="98" cy="68" rx="11" ry="11" fill="#e8eaf6"/>
       <!-- Left pupil -->
-      <circle id="leftPupil" cx="62" cy="68" r="8" fill="#06070f"/>
-      <circle cx="62" cy="68" r="4" fill="#e8392a" id="leftIris"/>
-      <circle id="leftShine" cx="64" cy="66" r="2" fill="#fff" opacity="0.8"/>
+      <circle id="leftPupil" cx="62" cy="68" r="5" fill="#06070f"/>
+      <circle cx="62" cy="68" r="2.5" fill="#e8392a" id="leftIris"/>
+      <circle id="leftShine" cx="63.5" cy="66.5" r="1.2" fill="#fff" opacity="0.9"/>
       <!-- Right pupil -->
-      <circle id="rightPupil" cx="98" cy="68" r="8" fill="#06070f"/>
-      <circle cx="98" cy="68" r="4" fill="#e8392a" id="rightIris"/>
-      <circle id="rightShine" cx="100" cy="66" r="2" fill="#fff" opacity="0.8"/>
+      <circle id="rightPupil" cx="98" cy="68" r="5" fill="#06070f"/>
+      <circle cx="98" cy="68" r="2.5" fill="#e8392a" id="rightIris"/>
+      <circle id="rightShine" cx="99.5" cy="66.5" r="1.2" fill="#fff" opacity="0.9"/>
       <!-- Nose -->
       <ellipse cx="80" cy="82" rx="5" ry="3" fill="#e8392a" opacity="0.8"/>
       <!-- Mouth smile -->
@@ -1014,10 +1014,10 @@ const creatureSVG  = creatureWrap.querySelector('svg');
 const leftShine  = document.getElementById('leftShine');
 const rightShine = document.getElementById('rightShine');
 const EYES = [
-  { cx: 62, cy: 68, pupil: leftPupil,  iris: leftIris,  shine: leftShine,  shineOX: 2, shineOY: -2 },
-  { cx: 98, cy: 68, pupil: rightPupil, iris: rightIris, shine: rightShine, shineOX: 2, shineOY: -2 }
+  { cx: 62, cy: 68, pupil: leftPupil,  iris: leftIris,  shine: leftShine,  shineOX: 1.5, shineOY: -1.5 },
+  { cx: 98, cy: 68, pupil: rightPupil, iris: rightIris, shine: rightShine, shineOX: 1.5, shineOY: -1.5 }
 ];
-const MAX_TRAVEL = 5; // how far pupils move from eye center (px in SVG units)
+const MAX_TRAVEL = 3.5; // how far pupils move from eye center (px in SVG units)
 
 document.addEventListener('mousemove', (e) => {
   if (!creatureSVG) return;
