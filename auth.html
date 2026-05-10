@@ -296,24 +296,8 @@ function sendWelcomeEmail(name, email, isNew) {
     : 'Welcome Back to GamZ, ' + name + '! 🎮';
 
   const message = isNew
-    ? '🎉 Your GamZ account has been created successfully!
-
-' +
-      'You can now browse and buy our original indie PC games.
-' +
-      'Use the TRIAL button on any game to play FREE for 30 seconds before buying.
-
-' +
-      'Your games are saved permanently in your account — accessible from any device.'
-    : '👋 Welcome back! Great to see you again.
-
-' +
-      'Your game library is ready and waiting for you.
-' +
-      'Check out our newest releases or re-download your purchased games from My Games.
-
-' +
-      'Remember: you can try any new game FREE for 30 seconds before purchasing!';
+    ? '🎉 Account created successfully! Browse our games and use the TRIAL button to play any game FREE for 30 seconds before buying. Your library is saved permanently on any device.'
+    : '👋 Welcome back! Your game library is ready and waiting. Check our newest releases or re-download your games from My Games. Try any new game FREE for 30 seconds!';
 
   // Re-init EmailJS to guarantee readiness (fixes Google popup timing issue)
   try { emailjs.init(EMAILJS_KEY); } catch(e) { /* already initialized */ }
