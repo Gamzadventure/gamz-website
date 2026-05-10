@@ -158,22 +158,24 @@ const FIREBASE_CONFIG = {
   authDomain:        "gamz-eb101.firebaseapp.com",
   projectId:         "gamz-eb101",
   storageBucket:     "gamz-eb101.appspot.com",
-  messagingSenderId: "1097358273455",
-  appId:             "1:1097358273455:web:46a1796874dc5fe5d3dd5a"
+  messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
+  appId:             "REPLACE_WITH_YOUR_APP_ID"
 };
 
 // EmailJS public key
 const EMAILJS_KEY      = "7DkD3Gwp_tNHh89nY";
 const EMAILJS_SERVICE  = "service_mab67kv";
-const EMAILJS_TEMPLATE = "template_zdamwf6"; // welcome / welcome-back template
+const EMAILJS_TEMPLATE_SIGNUP  = "template_zdamwf6";   // welcome NEW user template (existing)
+const EMAILJS_TEMPLATE_SIGNIN  = "template_SIGNIN";    // welcome BACK template (create this — see instructions below)
+const EMAILJS_TEMPLATE = EMAILJS_TEMPLATE_SIGNUP;      // kept for compatibility
 
 // Google Sheets signup tracking URL (from DATABASE_SETUP.md Step 3)
-const SHEETS_URL   = "https://docs.google.com/forms/d/e/1FAIpQLSdPU-JtIhxkklp0O_v8N8SGMIv5VjtH4xiVfQp20oE0r8cICQ/formResponse";
+const SHEETS_URL   = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
 const SHEETS_ENTRY = {
-  name:     "entry.2084010379",
-  email:    "entry.856348050",
-  joinedAt: "entry.312658167",
-  platform: "entry.1022970704"
+  name:     "entry.XXXXXXXXX",
+  email:    "entry.XXXXXXXXX",
+  joinedAt: "entry.XXXXXXXXX",
+  platform: "entry.XXXXXXXXX"
 };
 
 // ── Init ──────────────────────────────────────────────
@@ -283,36 +285,41 @@ function saveSession(name, email, photo) {
 function sendWelcomeEmail(name, email, isNew) {
   if (!email) { console.warn('sendWelcomeEmail: no email provided'); return; }
 
+  // ── Use DIFFERENT template for sign-up vs sign-in ──────────────────
+  // Sign-up  → template_zdamwf6   (Welcome to GamZ!)
+  // Sign-in  → template_SIGNIN    (Welcome Back to GamZ!)
+  // After creating template_SIGNIN in EmailJS, replace "template_SIGNIN" above.
+  const templateId = isNew ? EMAILJS_TEMPLATE_SIGNUP : EMAILJS_TEMPLATE_SIGNIN;
+
   const message = isNew
-    ? 'Welcome to GamZ! 🎮 Your account has been created successfully. Explore our game library and enjoy free 30-second trials before buying!'
-    : 'Welcome back to GamZ! 🎮 Great to see you again. Your game library is waiting for you!';
+    ? 'Your account has been created successfully. Explore our game library and enjoy free 30-second trials before buying! Use the Trial button on any game page to test before you purchase.'
+    : 'Great to see you again! Your game library is ready and waiting. Check out our newest releases or continue where you left off.';
 
   const subject = isNew
     ? 'Welcome to GamZ, ' + name + '! 🎮'
-    : 'Welcome back to GamZ, ' + name + '! 🎮';
+    : 'Welcome Back to GamZ, ' + name + '! 🎮';
 
-  // Re-initialize EmailJS each time to guarantee it's ready
-  // (fixes issue where Google popup resolves before EmailJS is ready)
-  try { emailjs.init(EMAILJS_KEY); } catch(e) { /* already init'd */ }
+  // Re-init EmailJS to guarantee it is ready (especially after Google popup)
+  try { emailjs.init(EMAILJS_KEY); } catch(e) { /* already initialized */ }
 
-  emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+  emailjs.send(EMAILJS_SERVICE, templateId, {
     to_name:    name,
     to_email:   email,
     message:    message,
     subject:    subject
   })
   .then(res => {
-    console.log('✅ Welcome email sent to', email, '| Status:', res.status, '| New user:', isNew);
+    console.log('✅ Email sent to', email, '| Template:', templateId, '| New:', isNew);
   })
   .catch(err => {
-    console.warn('⚠️ Welcome email failed for', email, ':', JSON.stringify(err));
-    // Retry once after 2 seconds
+    console.warn('⚠️ Email failed, retrying in 2s...', JSON.stringify(err));
+    // Retry once with signup template as fallback
     setTimeout(() => {
-      emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+      emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE_SIGNUP, {
         to_name: name, to_email: email, message, subject
       })
-      .then(() => console.log('✅ Welcome email sent (retry)'))
-      .catch(e2 => console.error('❌ Email retry also failed:', JSON.stringify(e2)));
+      .then(() => console.log('✅ Email sent (retry with signup template)'))
+      .catch(e2 => console.error('❌ Email retry failed:', JSON.stringify(e2)));
     }, 2000);
   });
 }

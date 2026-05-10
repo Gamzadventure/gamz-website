@@ -107,7 +107,7 @@ nav{
 }
 .nav-links a:hover{color:var(--text);background:var(--border)}
 
-/* Admin link — visually distinct, only shown to owner */
+/* Admin link — visually distinct, always visible, password protected inside */
 .nav-admin-link{
   font-size:.75rem!important;font-weight:700!important;letter-spacing:1.5px!important;
   color:#fff!important;
@@ -116,7 +116,7 @@ nav{
   border:1px solid var(--accent)!important;
   box-shadow:0 0 10px var(--glow);
   text-transform:uppercase!important;
-  display:none; /* hidden by default — shown only when GAMZ_OWNER cookie set */
+  display:inline-block; /* always visible — admin panel itself is password protected */
 }
 .nav-admin-link:hover{box-shadow:0 0 20px var(--glow),0 0 32px var(--glow)!important;transform:scale(1.05)}
 
@@ -966,9 +966,13 @@ function updateProfileUI() {
     pdNotLoggedIn.style.display = 'none';
     document.getElementById('pdName').textContent = currentUser.name || 'Player';
     document.getElementById('pdEmail').textContent = currentUser.email || '';
-    document.getElementById('pdAvatar').textContent =
-      currentUser.photo ? `<img src="${currentUser.photo}" style="width:40px;height:40px;border-radius:50%;object-fit:cover"/>` :
-      currentUser.name.charAt(0).toUpperCase();
+    // FIX: use innerHTML not textContent so <img> tag renders as actual image
+    const pdAvatarEl = document.getElementById('pdAvatar');
+    if (currentUser.photo) {
+      pdAvatarEl.innerHTML = `<img src="${currentUser.photo}" style="width:40px;height:40px;border-radius:50%;object-fit:cover"/>`;
+    } else {
+      pdAvatarEl.textContent = currentUser.name.charAt(0).toUpperCase();
+    }
   } else {
     btn.innerHTML = '👤';
     pdLoggedIn.style.display = 'none';
@@ -1380,22 +1384,12 @@ function showToast(msg, type='success') {
 /* ─────────────── INIT ────────────────────────────── */
 updateProfileUI();
 
-/* ─────────────── ADMIN VISIBILITY ───────────────────
-   Admin link is hidden from all users by default.
-   To show it: open browser console on your site and type:
-     localStorage.setItem("gamz_is_owner", "yes")
-   To hide it again:
-     localStorage.removeItem("gamz_is_owner")
-   This way users never see the admin link, only you do.
-──────────────────────────────────────────────────── */
+/* Admin link is always visible in navbar — the admin panel itself requires a password */
 (function() {
-  const isOwner = localStorage.getItem("gamz_is_owner") === "yes";
   const navLink    = document.getElementById("adminNavLink");
   const drawerLink = document.getElementById("adminDrawerLink");
-  if (isOwner) {
-    if (navLink)    navLink.style.display    = "inline-block";
-    if (drawerLink) drawerLink.style.display = "block";
-  }
+  if (navLink)    navLink.style.display    = "inline-block";
+  if (drawerLink) drawerLink.style.display = "block";
 })();
 </script>
 </body>
