@@ -371,14 +371,25 @@ async function loadDashboard() {
 // ── Load from Firestore ────────────────────────────────
 async function loadFromFirestore() {
   try {
-    const usersSnap  = await db.collection('users').get();
-    const ordersSnap = await db.collection('orders').get();
+    console.log('🔄 Fetching from Firestore...');
+    console.log('db object:', db);
 
-    allUsers = usersSnap.docs.map(doc => ({
-      id:        doc.id,
-      ...doc.data(),
-      joinedAt:  doc.data().joinedAt?.toDate?.() || new Date()
-    }));
+    const usersSnap  = await db.collection('users').get();
+    console.log('📦 Users snapshot size:', usersSnap.size);
+    console.log('📦 Users empty?', usersSnap.empty);
+
+    const ordersSnap = await db.collection('orders').get();
+    console.log('📦 Orders snapshot size:', ordersSnap.size);
+
+    allUsers = usersSnap.docs.map(doc => {
+      const data = doc.data();
+      console.log('👤 User doc:', doc.id, data);
+      return {
+        id:       doc.id,
+        ...data,
+        joinedAt: data.joinedAt?.toDate?.() || new Date()
+      };
+    });
 
     allOrders = ordersSnap.docs.map(doc => ({
       id: doc.id,
@@ -386,9 +397,18 @@ async function loadFromFirestore() {
       purchasedAt: doc.data().purchasedAt?.toDate?.() || new Date()
     }));
 
-    console.log(`✅ Loaded ${allUsers.length} users, ${allOrders.length} orders from Firestore`);
+    console.log(`✅ Final: ${allUsers.length} users, ${allOrders.length} orders loaded`);
+
+    // Show helpful message if empty
+    if (allUsers.length === 0) {
+      document.getElementById('lastRefresh').textContent =
+        '⚠️ Connected to Firestore but no users found. Check: 1) Firestore Rules allow read, 2) Users actually signed up via the live website (not localhost)';
+    }
+
   } catch(e) {
-    console.warn('Firestore load failed, using localStorage:', e.message);
+    console.error('❌ Firestore load error:', e.code, e.message);
+    document.getElementById('lastRefresh').textContent =
+      '❌ Firestore error: ' + e.message + ' | Check Rules in Firebase Console';
     loadFromLocalStorage();
   }
 }
