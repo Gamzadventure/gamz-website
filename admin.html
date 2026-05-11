@@ -253,10 +253,12 @@ canvas{width:100%!important}
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<!-- Firebase -->
+<!-- Firebase SDKs — loaded before gamz-firebase.js which initializes them -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- Shared Firebase config & helpers — contains the REAL config with all keys -->
+<script src="gamz-firebase.js"></script>
 
 <script>
 // ══════════════════════════════════════════════════════
@@ -264,21 +266,19 @@ canvas{width:100%!important}
 const ADMIN_PASSWORD = "gamzadmin2025";
 // ══════════════════════════════════════════════════════
 
-// Firebase config — same as auth.html
-const firebaseConfig = {
-  apiKey:            "AIzaSyDlLUTmmgNN2IEfSSS93vwhy8bU0uMwY4s",
-  authDomain:        "gamz-eb101.firebaseapp.com",
-  projectId:         "gamz-eb101",
-  storageBucket:     "gamz-eb101.appspot.com",
-  messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
-  appId:             "REPLACE_WITH_YOUR_APP_ID"
-};
-
+// ✅ Use the shared gamz-firebase.js config — no duplicate config needed here
+// gamzDB is already initialized by gamz-firebase.js (loaded above)
+// This means admin.html uses the EXACT same Firebase connection as auth.html
 let db = null;
-try {
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.firestore();
-} catch(e) { console.warn("Firebase:", e.message); }
+(function waitForDB() {
+  if (typeof gamzDB !== 'undefined' && gamzDB) {
+    db = gamzDB;
+    console.log('✅ Admin connected to Firestore via gamz-firebase.js');
+  } else {
+    // gamz-firebase.js not loaded yet — retry after 200ms
+    setTimeout(waitForDB, 200);
+  }
+})();
 
 // All 25 games data
 const GAMES = [
@@ -343,12 +343,21 @@ function switchAdminTab(name, btn) {
 // LOAD DASHBOARD
 // ══════════════════════════════════════════════════════
 async function loadDashboard() {
-  document.getElementById('lastRefresh').textContent =
-    'Last refreshed: ' + new Date().toLocaleString('en-IN');
+  document.getElementById('lastRefresh').textContent = 'Loading from Firestore…';
 
-  // Try Firestore first, fall back to localStorage
+  // Wait up to 3 seconds for gamzDB to be ready
+  let waited = 0;
+  while (!db && waited < 3000) {
+    await new Promise(r => setTimeout(r, 200));
+    if (typeof gamzDB !== 'undefined' && gamzDB) db = gamzDB;
+    waited += 200;
+  }
+
   if (db) {
     await loadFromFirestore();
+    document.getElementById('lastRefresh').textContent =
+      '✅ Last refreshed: ' + new Date().toLocaleString('en-IN') +
+      ' | Source: Firebase Firestore';
   } else {
     loadFromLocalStorage();
   }
@@ -391,7 +400,7 @@ function loadFromLocalStorage() {
   allUsers  = [];
   allOrders = [];
   document.getElementById('lastRefresh').textContent =
-    '⚠️ Firestore not configured — add messagingSenderId & appId to gamz-firebase.js to see user data';
+    '⚠️ Firestore connection failed — check that gamz-firebase.js is in the same folder and has the correct Firebase config.';
   console.log('ℹ️ Firestore not configured — no data to show');
 }
 
