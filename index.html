@@ -410,8 +410,13 @@ nav{
   border-color:var(--accent);
   box-shadow:0 16px 40px rgba(0,0,0,.5),0 0 24px var(--glow);
 }
-
-
+.game-card .card-img{
+  width:100%;aspect-ratio:3/4;
+  object-fit:cover;
+  display:block;
+  background:var(--bg3);
+  position:relative;overflow:hidden;
+}
 .game-card .card-cover{
   width:100%;height:100%;
   display:flex;align-items:center;justify-content:center;
@@ -420,17 +425,6 @@ nav{
   text-align:center;padding:16px;
   line-height:1.3;
   background:var(--bg3);
-}
-
-.game-image{
-  width:100% !important;
-  height:100% !important;
-  object-fit:cover !important;
-  display:block;
-  padding:0 !important;
-  margin:0;
-  transform:none !important;
-  background:none !important;
 }
 .game-card .badge{
   position:absolute;top:10px;left:10px;
@@ -674,7 +668,7 @@ footer{
       <div class="pd-avatar" id="pdAvatar">👤</div>
       <div><div class="pd-name" id="pdName">Player</div><div class="pd-email" id="pdEmail">email@gmail.com</div></div>
     </div>
-    <div class="pd-item" onclick="window.location='profile.html'"><span class="icon">👤</span> My Profile</div>
+    <div class="pd-item" onclick="window.location='my-games.html'"><span class="icon">👤</span> My Profile</div>
     <div class="pd-item" onclick="window.location='my-games.html'"><span class="icon">🎮</span> My Games</div>
     <div class="pd-item" onclick="window.location='cart.html'"><span class="icon">🛒</span> Cart</div>
     <div class="pd-divider"></div>
@@ -861,109 +855,84 @@ footer{
 /* ─────────────── GAMES DATA ─────────────────────── */
 const GAMES = [
   // Racing
-  {id:1,name:"Neon Drift Legends",cat:"racing",price:99,badge:"hot", 
-     logo: "logo/NEON DRIFT LEGENDS.png",
-  colors:["#ff00ff","#00ffff","#0d0d1a"],
+  {id:1,name:"Neon Drift Legends",cat:"racing",price:99,badge:"hot",
+   colors:["#ff00ff","#00ffff","#0d0d1a"],
    desc:"High-speed neon racing through electric cityscapes."},
   {id:2,name:"Turbo Street Rush",cat:"racing",price:149,badge:"new",
-     logo: "logo/TURBO STREET RUSH.png",
-  colors:["#ff6b00","#ffcc00","#1a0d00"],
+   colors:["#ff6b00","#ffcc00","#1a0d00"],
    desc:"Dodge traffic at insane speeds in urban streets."},
   {id:3,name:"Midnight Circuit X",cat:"racing",price:129,
-     logo: "logo/MIDNIGHT CIRCUIT X.png",
-  colors:["#0055ff","#00ffcc","#000d1a"],
+   colors:["#0055ff","#00ffcc","#000d1a"],
    desc:"Illegal midnight races on dangerous mountain circuits."},
   {id:4,name:"Nitro Ridge Rally",cat:"racing",price:99,
-     logo: "logo/NITRO RIDGE RALLY.png",
-  colors:["#ff4400","#ff8800","#1a0800"],
+   colors:["#ff4400","#ff8800","#1a0800"],
    desc:"Off-road rally racing through dusty ridgelines."},
   {id:5,name:"Hyper City Racers",cat:"racing",price:119,
-     logo: "logo/HYPER CITY RACERS.png",
-  colors:["#aa00ff","#ff00aa","#0d001a"],
+   colors:["#aa00ff","#ff00aa","#0d001a"],
    desc:"Futuristic city races with boost pads and ramps."},
   // Action
   {id:6,name:"Frontline Havoc",cat:"action",price:199,badge:"hot",
-     logo: "logo/FRONTLINE HAVOC.png",
-  colors:["#5d4037","#ff6f00","#1a0f00"],
+   colors:["#5d4037","#ff6f00","#1a0f00"],
    desc:"Intense frontline warfare with tactical squad play."},
   {id:7,name:"Voidstrike Ops",cat:"action",price:179,
-     logo: "logo/VOIDSTRIKE OPS.png",
-  colors:["#1a237e","#00e5ff","#000814"],
+   colors:["#1a237e","#00e5ff","#000814"],
    desc:"Elite special ops missions in zero-gravity zones."},
   {id:8,name:"Phantom Recon Delta",cat:"action",price:199,badge:"new",
-     logo: "logo/PHANTOM RECON DELTA.png",
-  colors:["#263238","#00bcd4","#080c0f"],
+   colors:["#263238","#00bcd4","#080c0f"],
    desc:"Stealth warfare in hostile enemy territory."},
   {id:9,name:"Shadow Breach",cat:"action",price:149,
-     logo: "logo/SHADOW BREACH.png",
-  colors:["#212121","#f44336","#0a0a0a"],
+   colors:["#212121","#f44336","#0a0a0a"],
    desc:"Break into heavily fortified enemy strongholds."},
   {id:10,name:"Storm Assault Unit",cat:"action",price:169,
-     logo: "logo/STORM ASSAULT UNIT.png",
-  colors:["#1b5e20","#69f0ae","#020f05"],
+   colors:["#1b5e20","#69f0ae","#020f05"],
    desc:"Command elite storm troops in rapid assaults."},
   // Strategy
   {id:11,name:"Metro Train Manager",cat:"strategy",price:89,
-     logo: "logo/METRO TRAIN MANAGER.png",
-  colors:["#e65100","#ffa726","#1a0e00"],
+   colors:["#e65100","#ffa726","#1a0e00"],
    desc:"Build and manage the ultimate urban rail network."},
   {id:12,name:"Cargo Truck Tycoon",cat:"strategy",price:99,
-     logo: "logo/CARGO TRUCK TYCOON.png",
-  colors:["#33691e","#cddc39","#0a1000"],
+   colors:["#33691e","#cddc39","#0a1000"],
    desc:"Run a trucking empire across the entire country."},
   {id:13,name:"City Builder Origins",cat:"strategy",price:129,badge:"hot",
-     logo: "logo/CITY BUILDER ORIGINS.png",
-  colors:["#0d47a1","#40c4ff","#000814"],
+   colors:["#0d47a1","#40c4ff","#000814"],
    desc:"Start from scratch and build a thriving metropolis."},
   {id:14,name:"Island Farm Frontier",cat:"strategy",price:79,
-     logo: "logo/ISLAND FARM FRONTIER.png",
-  colors:["#1b5e20","#76ff03","#021000"],
+   colors:["#1b5e20","#76ff03","#021000"],
    desc:"Settle and develop a remote island into a paradise."},
   {id:15,name:"Deep Sea Harbor Sim",cat:"strategy",price:109,
-     logo: "logo/DEEP SEA HARBOR SIM.png",
-  colors:["#006064","#18ffff","#000d0e"],
+   colors:["#006064","#18ffff","#000d0e"],
    desc:"Manage a bustling underwater harbor and fleet."},
   // Sports
   {id:16,name:"Streetball Champions 24",cat:"sports",price:99,
-     logo: "logo/STREETBALL CHAMPIONS 24.png",
-  colors:["#f57f17","#ffee58","#1a0f00"],
+   colors:["#f57f17","#ffee58","#1a0f00"],
    desc:"Outdoor basketball with wild street-rule matches."},
   {id:17,name:"Pro Volley Arena",cat:"sports",price:89,
-     logo: "logo/PRO VOLLEYBALL ARENA.png",
-  colors:["#880e4f","#f48fb1","#1a0010"],
+   colors:["#880e4f","#f48fb1","#1a0010"],
    desc:"High-energy beach and indoor volleyball battles."},
   {id:18,name:"Ultimate Goal League",cat:"sports",price:119,badge:"new",
-     logo: "logo/ULTIMATE GOAL LEAGUE.png",
-  colors:["#1a237e","#448aff","#000614"],
+   colors:["#1a237e","#448aff","#000614"],
    desc:"Full 11v11 football league with real tactics."},
   {id:19,name:"Turbo Table Tennis",cat:"sports",price:69,
-     logo: "logo/TURBO TABLE TENNIS.png",
-  colors:["#b71c1c","#ef9a9a","#1a0000"],
+   colors:["#b71c1c","#ef9a9a","#1a0000"],
    desc:"Lightning-fast ping pong with power shots."},
   {id:20,name:"All-Star Bowling Nights",cat:"sports",price:79,
-     logo: "logo/ALL-STAR BOWLING NIGHTS.png",
-  colors:["#4a148c","#ea80fc","#0d0014"],
+   colors:["#4a148c","#ea80fc","#0d0014"],
    desc:"Neon bowling arcade with trick shots & tournaments."},
   // RPG
   {id:21,name:"Urban Siege Zero",cat:"rpg",price:179,
-     logo: "logo/URBAN SIEGE ZERO.png",
-  colors:["#37474f","#76ff03","#080c05"],
+   colors:["#37474f","#76ff03","#080c05"],
    desc:"Take back the city from a rogue AI faction."},
   {id:22,name:"Titan Squad Assault",cat:"rpg",price:199,badge:"hot",
-     logo: "logo/TITAN SQUAD ASSAULT.png",
-  colors:["#b71c1c","#ff6d00","#1a0000"],
+   colors:["#b71c1c","#ff6d00","#1a0000"],
    desc:"Assemble a team of titans and conquer the wasteland."},
   {id:23,name:"Crystal Dungeon Quest",cat:"rpg",price:149,
-     logo: "logo/CRYSTAL DUNGEON QUEST.png",
-  colors:["#4a148c","#e040fb","#0d0014"],
+   colors:["#4a148c","#e040fb","#0d0014"],
    desc:"Explore endless crystal caverns full of treasure."},
   {id:24,name:"Mythborn Warriors",cat:"rpg",price:169,badge:"new",
-     logo: "logo/MYTHBORN WARRIORS.png",
-  colors:["#1a237e","#ffd740","#000814"],
+   colors:["#1a237e","#ffd740","#000814"],
    desc:"Warriors born of myth battle ancient gods."},
   {id:25,name:"Cyber Realm Siege",cat:"rpg",price:189,
-     logo: "logo/CYBER REALM SIEGE.png",
-  colors:["#006064","#00e5ff","#000d0e"],
+   colors:["#006064","#00e5ff","#000d0e"],
    desc:"Hack and siege in a neon cyberpunk dimension."},
 ];
 
@@ -1254,7 +1223,9 @@ function renderGames(filter = 'all', query = '') {
   grid.innerHTML = list.map(g => `
     <div class="game-card" onclick="openGame(${g.id})">
       <div class="card-img">
-        <img src="${g.logo}" alt="${g.name}" class="game-image" style="width:100%; height:100%; object-fit:cover;">
+        <div class="card-cover" style="background:${makeGradient(g.colors)};color:${g.colors[1]}">
+          ${g.name.toUpperCase()}
+        </div>
         ${g.badge ? `<span class="badge badge-${g.badge}">${g.badge}</span>` : ''}
       </div>
       <div class="card-body">
